@@ -28,11 +28,8 @@ O processo pode morrer durante um treino: a sessão ativa não é persistida nem
 
 ## Distribuição de teste
 
-Debug usa dev.breda.fit.debug e uma chave de teste explicitamente pública em test-signing. Mantém assinaturas local/CI iguais e evita perda de dados de teste em atualizações. Essa chave não é uma credencial de conta, não é chave de produção e não deve proteger distribuição comercial. Avaliações devem usar dados fictícios. Release tem ID separado dev.breda.fit e deve usar chave privada do titular; ela nunca é incluída no repositório.
+Debug usa dev.breda.fit.debug. A esteira gera uma chave temporária, sem keystore no repositório. Não há garantia de atualização entre APKs de execuções distintas; exporte dados de teste antes de desinstalar. Release tem ID separado dev.breda.fit e exige assinatura privada do titular.
 
 ## Multiplataforma real
 
 O núcleo commonMain não importa Java/Android. Targets Android e JVM consomem o mesmo código; iOS ARM64/simulador declarados. A UI atual é Android nativa. A existência de targets iOS não representa um aplicativo iOS pronto nem uma compilação nativa iOS validada.
-
-
-Signing update: GitHub builds generate an ephemeral debug key. No keystore is committed. Different build runs may require uninstalling the previous evaluation APK before installing; export test measurements first. Production signing remains separate.

@@ -16,6 +16,3 @@ Massa de gordura = peso × percentual informado / 100. Massa livre de gordura = 
 Quatro rotinas genéricas leves com intervalos de duração limitada e descanso. O relógio não determina o número de repetições ou a amplitude. A rotina em pé não exige apoio das mãos como parte do movimento, mas pode exigir apoio individual para equilíbrio; não é uma certificação de adequação a qualquer deficiência. Opções sentadas também dependem de conforto e avaliação individual.
 
 Antes de publicação comercial, revisar conteúdo, amplitude e imagens com profissional habilitado e realizar testes de acessibilidade. O produto não deve alegar certificação clínica, tratamento ou garantia de emagrecimento.
-
-
-Signing update: GitHub builds generate an ephemeral debug key. No keystore is committed. Different build runs may require uninstalling the previous evaluation APK before installing; export test measurements first. Production signing remains separate.

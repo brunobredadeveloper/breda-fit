@@ -32,7 +32,7 @@ JDK 17, Android SDK 37.0, build-tools 36.0.0. Gradle 9.4.1, AGP 9.2.1, Kotlin 2.
 ./gradlew :shared:jvmTest :androidApp:lintDebug :androidApp:assembleDebug
 ```
 
-APK: `androidApp/build/outputs/apk/debug/androidApp-debug.apk`. Inclui toda a aplicação; não precisa de computador, Metro ou servidor. Assinatura debug é para avaliação interna, com chave pública de teste versionada para manter atualizações local/CI compatíveis. O aplicativo de teste usa ID `dev.breda.fit.debug`, separado do ID de produção `dev.breda.fit`. Nunca usar essa chave pública em produção. Produção precisa de chave privada do titular, AAB e revisão de publicação.
+APK: `androidApp/build/outputs/apk/debug/androidApp-debug.apk`. Inclui toda a aplicação; não precisa de computador, Metro ou servidor. Assinatura debug é para avaliação interna. A esteira gera uma chave temporária; nenhum keystore é versionado. Builds diferentes podem exigir desinstalação do APK anterior; exporte dados de teste antes. O aplicativo de teste usa ID `dev.breda.fit.debug`, separado do ID de produção `dev.breda.fit`. Produção utiliza uma chave privada separada. Produção precisa de chave privada do titular, AAB e revisão de publicação.
 
 GitHub Actions realiza testes, lint e build do APK em cada push/PR. O artefato se chama `breda-fit-android-apk`. Um workflow pronto não significa que ele já tenha executado: consulte [validação](docs/validation.md).
 
@@ -49,6 +49,3 @@ Revisão das rotinas e ilustrações por profissional de educação física; tes
 Descrição sugerida do repositório:
 
 > Offline home workouts and body progress tracking for Android, built with Kotlin Multiplatform, Jetpack Compose, MVVM and Clean Architecture by breda_dev.
-
-
-Signing update: GitHub builds generate an ephemeral debug key. No keystore is committed. Different build runs may require uninstalling the previous evaluation APK before installing; export test measurements first. Production signing remains separate.

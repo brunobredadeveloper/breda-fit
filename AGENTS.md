@@ -10,6 +10,3 @@
 - Verify with `./gradlew :shared:jvmTest :androidApp:lintDebug :androidApp:assembleDebug`. Instrumented tests additionally require an Android emulator/device.
 - Android is the implemented app. Declared iOS core targets are not an implemented iOS UI or proof of an iOS build.
 - Never commit personal measurements, production signing keys, account credentials or local.properties.
-
-
-Signing update: GitHub builds generate an ephemeral debug key. No keystore is committed. Different build runs may require uninstalling the previous evaluation APK before installing; export test measurements first. Production signing remains separate.

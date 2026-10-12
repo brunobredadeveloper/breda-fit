@@ -7,6 +7,3 @@ Não exige conta, não inclui publicidade, analytics, upload ou integração com
 Orientação por voz usa o mecanismo TTS do aparelho. O funcionamento e eventual conectividade do mecanismo dependem do provedor instalado e das configurações do sistema.
 
 Antes da Play Store: incluir nome/identidade jurídica do controlador, e-mail real de suporte, política em URL pública, versão/data, direitos e canal de contato aplicáveis. Não inventar contato. Revisar declarações de dados de saúde e Data Safety conforme comportamento efetivo do build final e eventuais SDKs adicionados.
-
-
-Signing update: GitHub builds generate an ephemeral debug key. No keystore is committed. Different build runs may require uninstalling the previous evaluation APK before installing; export test measurements first. Production signing remains separate.
