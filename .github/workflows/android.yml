@@ -1,0 +1,64 @@
+name: Breda Fit checks and Android APK
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+concurrency:
+  group: fit-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools platforms;android-37.0 build-tools;36.0.0'
+          log-accepted-android-sdk-licenses: false
+      - uses: gradle/actions/setup-gradle@v4
+      - run: chmod +x gradlew
+      - name: Generate ephemeral debug signing key
+        run: |
+          mkdir -p "$HOME/.android"
+          keytool -genkeypair -keystore "$HOME/.android/debug.keystore" -storepass android -keypass android -alias androiddebugkey -dname "CN=Android Debug,O=breda_dev,C=BR" -keyalg RSA -keysize 2048 -validity 365
+      - name: Shared tests, Android lint and APK
+        run: ./gradlew :shared:jvmTest :androidApp:lintDebug :androidApp:assembleDebug :androidApp:assembleDebugAndroidTest --stacktrace
+      - name: Sign and verify internal test APKs
+        run: |
+          signer="$ANDROID_HOME/build-tools/36.0.0/apksigner"
+          for apk in androidApp/build/outputs/apk/debug/*.apk androidApp/build/outputs/apk/androidTest/debug/*.apk; do
+            "$signer" sign --ks "$HOME/.android/debug.keystore" --ks-key-alias androiddebugkey --ks-pass pass:android --key-pass pass:android "$apk"
+            "$signer" verify --verbose "$apk"
+          done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: breda-fit-android-apk
+          path: androidApp/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+          retention-days: 30
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: breda-fit-check-reports
+          path: |
+            shared/build/reports/tests/
+            androidApp/build/reports/lint-results-debug.*
+  ios-shared:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: 'platforms;android-37.0'
+          log-accepted-android-sdk-licenses: false
+      - uses: gradle/actions/setup-gradle@v4
+      - run: chmod +x gradlew && ./gradlew :shared:compileKotlinIosArm64 :shared:compileKotlinIosSimulatorArm64
