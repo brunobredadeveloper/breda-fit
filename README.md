@@ -2,13 +2,19 @@
 
 App Android de exercícios em casa e acompanhamento corporal, com núcleo **Kotlin Multiplatform**. Interface nativa Jetpack Compose / Material 3, identidade em verde-lima, grafite e azul e demonstrações humanas em 3D.
 
-## Demonstrações humanas · 0.4
+## Personalização inclusiva · 0.5
+
+Nome social ou de preferência como único nome exibido; nenhum nome de registro obrigatório. Identidade de gênero opcional (mulher, homem, pessoa não binária, autodescrição ou não informar), separada da aparência. Avatares Caio, Aurora e Alex com prévia 3D e troca no perfil; qualquer pessoa pode escolher qualquer avatar. Todos os campos ficam no aparelho e não modificam cálculos corporais ou rotinas.
+
+Esta rodada implementa a personalização com a base 3D CC0 existente e novas variações. **O conceito fotorrealista aprovado na conversa não está reproduzido exatamente nem é um modelo 3D utilizável**. A produção e integração de um personagem profissional nesse padrão continua pendente; não se afirma qualidade equivalente a GTA 6 ou personagens AAA. Veja [alvo visual](docs/avatar-target.md).
+
+## Demonstrações humanas
 
 Modelo humano adulto detalhado, com anatomia, rosto, dedos, textura de pele, olhos e cabelo, baseado em ativos gráficos CC0 do MakeHuman Community. Roupa com a paleta da breda_dev, tênis, iluminação com materiais de rugosidade distinta e animação por esqueleto na GPU. Não é uma pessoa real digitalizada nem uma simulação biomecânica.
 
 Controles para girar e ampliar; funcionamento offline, movimento reduzido e fallback vetorial informado em caso de GPU indisponível. Veja [arquitetura visual e limites](docs/visuals.md) e [licenças e proveniência](tools/human/NOTICE.md).
 
-Avaliação: **Breda Fit Humano 0.4** (`dev.breda.fit.preview04`), instalada ao lado das versões anteriores. Os dados antigos permanecem nelas, sem transferência automática.
+Avaliação: **Breda Fit Avatares 0.5** (`dev.breda.fit.preview05`), instalada ao lado das versões anteriores. Os dados antigos permanecem nelas, sem transferência automática.
 
 ## O que está implementado
 

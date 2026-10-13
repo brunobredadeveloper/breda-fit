@@ -14,7 +14,8 @@ import java.nio.ByteOrder
 import kotlin.math.*
 
 /** Licensed anatomical meshes with four-weight GPU skinning; assets never leave the device. */
-internal class HumanModel(private val assets:AssetManager) {
+internal class HumanModel(private val assets:AssetManager,style:dev.breda.fit.AvatarStyle) {
+    private val folder=when(style){dev.breda.fit.AvatarStyle.CAIO->"human";dev.breda.fit.AvatarStyle.AURORA->"human/aurora";dev.breda.fit.AvatarStyle.ALEX->"human/alex"}
     private data class Mesh(val vertices:Int,val indices:Int,val count:Int,val material:Int,val texture:Int)
     private val meshes=ArrayList<Mesh>()
     private val rest=Array(16){Array(2){Vec(0f,0f,0f)}}
@@ -24,7 +25,7 @@ internal class HumanModel(private val assets:AssetManager) {
     private fun uniform(name:String)=locations.getOrPut(name){GLES20.glGetUniformLocation(program,name)}
     private fun attribute(name:String)=locations.getOrPut(name){GLES20.glGetAttribLocation(program,name)}
     fun initialize(){
-        val data=ByteBuffer.wrap(assets.open("human/rig.bin").use{it.readBytes()}).order(ByteOrder.LITTLE_ENDIAN)
+        val data=ByteBuffer.wrap(assets.open("$folder/rig.bin").use{it.readBytes()}).order(ByteOrder.LITTLE_ENDIAN)
         for(b in rest)for(i in 0..1)b[i]=Vec(data.float,data.float,data.float)
         program=GLES20.glCreateProgram()
         val vs=compile(GLES20.GL_VERTEX_SHADER,VERTEX);val fs=compile(GLES20.GL_FRAGMENT_SHADER,FRAGMENT)
@@ -32,7 +33,7 @@ internal class HumanModel(private val assets:AssetManager) {
         val ok=IntArray(1);GLES20.glGetProgramiv(program,GLES20.GL_LINK_STATUS,ok,0);check(ok[0]!=0){GLES20.glGetProgramInfoLog(program)}
         GLES20.glDeleteShader(vs);GLES20.glDeleteShader(fs)
         for((name,texture) in listOf("skin" to "skin","outfit" to null,"shoes" to "shoes","eyes" to "eyes","hair" to "hair","brows" to "brows")){
-            val b=ByteBuffer.wrap(assets.open("human/$name.mesh").use{it.readBytes()}).order(ByteOrder.LITTLE_ENDIAN)
+            val b=ByteBuffer.wrap(assets.open("$folder/$name.mesh").use{it.readBytes()}).order(ByteOrder.LITTLE_ENDIAN)
             check(b.int==0x34484642);val material=b.int;val n=b.int;val count=b.int
             val vertices=ByteBuffer.allocateDirect(n*68).order(ByteOrder.nativeOrder());val floats=vertices.asFloatBuffer();repeat(n*17){floats.put(b.float)};vertices.position(0)
             val indices=ByteBuffer.allocateDirect(count*2).order(ByteOrder.nativeOrder());val shorts=indices.asShortBuffer();repeat(count){shorts.put(b.short)};indices.position(0)
@@ -44,11 +45,12 @@ internal class HumanModel(private val assets:AssetManager) {
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER,0);GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER,0)
     }
     private fun loadTexture(name:String):Int {
+        val path=if(name=="skin")"$folder/skin.png" else "human/$name.png"
         val options=BitmapFactory.Options().apply{inJustDecodeBounds=true}
-        assets.open("human/$name.png").use{BitmapFactory.decodeStream(it,null,options)}
+        assets.open(path).use{BitmapFactory.decodeStream(it,null,options)}
         options.inJustDecodeBounds=false;options.inSampleSize=1
         while(max(options.outWidth,options.outHeight)/options.inSampleSize>1024)options.inSampleSize*=2
-        val bitmap=assets.open("human/$name.png").use{checkNotNull(BitmapFactory.decodeStream(it,null,options))}
+        val bitmap=assets.open(path).use{checkNotNull(BitmapFactory.decodeStream(it,null,options))}
         val id=IntArray(1);GLES20.glGenTextures(1,id,0);GLES20.glBindTexture(GLES20.GL_TEXTURE_2D,id[0])
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D,GLES20.GL_TEXTURE_MIN_FILTER,GLES20.GL_LINEAR_MIPMAP_LINEAR)
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D,GLES20.GL_TEXTURE_MAG_FILTER,GLES20.GL_LINEAR)

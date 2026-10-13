@@ -45,6 +45,22 @@ class ExerciseVisualTest {
         compose.onNodeWithText("Fechar demonstração").performClick()
         compose.onNodeWithText("Ampliar").assertIsDisplayed()
     }
+    @Test fun allAvatarStylesRenderActualDifferentHumanMeshes(){
+        compose.setContent{FitTheme{Column(Modifier.fillMaxSize().background(Ink).padding(16.dp)){
+            AvatarStyle.entries.forEach { style ->
+                Text(style.name,color=Color.White)
+                androidx.compose.runtime.CompositionLocalProvider(LocalAvatarStyle provides style){ExerciseArt(Catalog.exercise("march"),false,Modifier.fillMaxWidth().weight(1f))}
+            }
+        }}}
+        compose.waitForIdle()
+        compose.waitUntil(30000){
+            try{AvatarStyle.entries.all{style->compose.onAllNodesWithTag("scene-avatar-${style.name}-march").fetchSemanticsNodes().isNotEmpty()}}
+            catch(e:IllegalStateException){if(e.message?.contains("No compose hierarchies")==true)false else throw e}
+        }
+        val rendered=compose.onAllNodesWithTag("exercise-art-march").fetchSemanticsNodes()
+        assertEquals(3,rendered.size)
+        screenshot("visual-avatars.png")
+    }
     @Test fun catalogIllustrationsRemainVisible() {
         compose.setContent {
             FitTheme {

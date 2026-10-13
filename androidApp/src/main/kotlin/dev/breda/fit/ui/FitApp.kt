@@ -77,6 +77,7 @@ fun date(day: Long): String = LocalDate.ofEpochDay(day).format(DateTimeFormatter
     LaunchedEffect(ui.message) { ui.message?.let { snackbar.showSnackbar(it); vm.clearMessage() } }
     BackHandler(ui.session == null && ui.data.profile != null && ui.page != Page.HOME) { vm.page(Page.HOME) }
     VoiceCoach(context, ui) { scope.launch { snackbar.showSnackbar("Voz não disponível. Verifique o mecanismo e o idioma de voz nas configurações do Android.") } }
+    CompositionLocalProvider(LocalAvatarStyle provides (ui.data.profile?.avatar ?: AvatarStyle.CAIO)) {
     FitTheme {
         Scaffold(containerColor = Ink, snackbarHost = { SnackbarHost(snackbar) }, bottomBar = {
             if (!ui.loading && ui.data.profile != null && ui.session == null && !ui.storageFailure) {
@@ -105,6 +106,7 @@ fun date(day: Long): String = LocalDate.ofEpochDay(day).format(DateTimeFormatter
                 }
             }
         }
+    }
     }
 }
 @Composable private fun VoiceCoach(context: Context, ui: FitUiState, onUnavailable: () -> Unit) {
@@ -172,10 +174,13 @@ fun date(day: Long): String = LocalDate.ofEpochDay(day).format(DateTimeFormatter
 }
 @Composable private fun ProfileForm(vm: FitViewModel) {
     var name by rememberSaveable { mutableStateOf("") }; var age by rememberSaveable { mutableStateOf("") }; var height by rememberSaveable { mutableStateOf("") }; var weight by rememberSaveable { mutableStateOf("") }; var goal by rememberSaveable { mutableStateOf("") }; var weekly by rememberSaveable { mutableFloatStateOf(3f) }; var error by remember { mutableStateOf<String?>(null) }
+    var avatar by rememberSaveable { mutableStateOf(AvatarStyle.CAIO) }
+    var identity by rememberSaveable { mutableStateOf(GenderIdentity.UNSPECIFIED) }
+    var description by rememberSaveable { mutableStateOf("") }
     val ui by vm.state.collectAsStateWithLifecycle()
     PageBody("Um plano com\na sua medida.", "Começar") {
         Text("Sua meta é pessoal. O app acompanha o progresso; não promete prazo para perder peso.", color = Mist)
-        Field("Como quer ser chamado?", name, false) { name = it }
+        IdentityFields(name,avatar,identity,description,{name=it},{avatar=it},{identity=it},{description=it})
         Field("Idade (20 anos ou mais)", age) { age = it }; Field("Altura (cm)", height) { height = it }
         Field("Peso inicial (kg)", weight) { weight = it }; Field("Meta de peso (kg)", goal) { goal = it }
         Text("${weekly.roundToInt()} sessões por semana", fontWeight = FontWeight.Bold)
@@ -183,7 +188,7 @@ fun date(day: Long): String = LocalDate.ofEpochDay(day).format(DateTimeFormatter
         error?.let { Text(it, color = Coral) }
         Primary(if (ui.saving) "Salvando…" else "Começar minha jornada", !ui.saving) {
             try {
-                val p = Profile(name.trim(), age.toIntOrNull() ?: 0, number(height) ?: 0.0, number(weight) ?: 0.0, number(goal) ?: 0.0, weekly.roundToInt(), vm.today)
+                val p = Profile(name.trim(), age.toIntOrNull() ?: 0, number(height) ?: 0.0, number(weight) ?: 0.0, number(goal) ?: 0.0, weekly.roundToInt(), vm.today, avatar, identity, description.trim())
                 Validation.profile(p)
                 vm.setup(p)
             } catch (e: IllegalArgumentException) { error = e.message }

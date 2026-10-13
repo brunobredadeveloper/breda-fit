@@ -2,7 +2,10 @@ package dev.breda.fit
 
 object Validation {
     fun profile(p: Profile) {
-        require(p.name.trim().length in 1..40) { "Informe seu nome (até 40 caracteres)." }
+        require(p.name.trim().length in 1..40) { "Informe seu nome social ou de preferência (até 40 caracteres)." }
+        require(p.genderDescription.trim().length <= 40) { "Use até 40 caracteres para sua identificação." }
+        require(p.genderIdentity != GenderIdentity.SELF_DESCRIBED || p.genderDescription.isNotBlank()) { "Preencha sua autodescrição ou escolha não informar." }
+        require(p.genderIdentity == GenderIdentity.SELF_DESCRIBED || p.genderDescription.isEmpty()) { "A autodescrição deve estar vazia para as outras opções." }
         require(p.age in 20..100) { "Este app é destinado a adultos a partir de 20 anos." }
         require(p.heightCm.isFinite() && p.heightCm in 80.0..250.0) { "Altura deve estar entre 80 e 250 cm." }
         require(p.initialKg.isFinite() && p.initialKg in 20.0..400.0) { "Informe um peso válido, em kg." }

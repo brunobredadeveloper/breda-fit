@@ -2,7 +2,10 @@ package dev.breda.fit
 
 import kotlinx.serialization.Serializable
 
-@Serializable data class Profile(val name: String, val age: Int, val heightCm: Double, val initialKg: Double, val targetKg: Double, val weeklySessions: Int, val createdDay: Long)
+@Serializable enum class AvatarStyle { CAIO, AURORA, ALEX }
+@Serializable enum class GenderIdentity { UNSPECIFIED, WOMAN, MAN, NON_BINARY, SELF_DESCRIBED }
+/** name is the social/preferred name; no legal name or sex assigned at birth is collected. */
+@Serializable data class Profile(val name: String, val age: Int, val heightCm: Double, val initialKg: Double, val targetKg: Double, val weeklySessions: Int, val createdDay: Long, val avatar: AvatarStyle = AvatarStyle.CAIO, val genderIdentity: GenderIdentity = GenderIdentity.UNSPECIFIED, val genderDescription: String = "")
 @Serializable data class Measurement(val day: Long, val kg: Double, val waistCm: Double? = null, val fatPercent: Double? = null, val muscleKg: Double? = null)
 @Serializable data class WorkoutRecord(val id: String, val planId: String, val day: Long, val activeSeconds: Long, val completedIntervals: Int, val totalIntervals: Int, val effort: Int)
 @Serializable data class Preferences(val reducedMotion: Boolean = false, val voice: Boolean = false)

@@ -52,9 +52,10 @@ def normalise(w):
     vals=[(k,v/total) for k,v in vals]
     return vals+[(0,0)]*(4-len(vals))
 
-def main(cache,out):
+def main(cache,out,variant="caio"):
     base,uv,faces=obj(cache/'base.obj')
-    for name,amount in [('male.target',1.),('muscle.target',.18)]:
+    morphs={'caio':[('male.target',1.),('muscle.target',.18)],'aurora':[('female.target',1.)],'alex':[('male.target',.5),('female.target',.5)]}
+    for name,amount in morphs[variant]:
         for line in (cache/name).read_text().splitlines():
             p=line.split()
             if len(p)==4 and not line.startswith('#'):
@@ -150,8 +151,11 @@ def main(cache,out):
     for args in meshes:write_mesh(*args)
     with (out/'rig.bin').open('wb') as f:
         for a,b in rest:f.write(struct.pack('<6f',*(world(a)+world(b))))
-    for src,dest in [('skin.png','skin.png'),('hair.png','hair.png'),('brows.png','brows.png'),('eyes.png','eyes.png'),('shoes.png','shoes.png')]:shutil.copyfile(cache/src,out/dest)
+    if variant=='caio':
+        for src,dest in [('skin.png','skin.png'),('hair.png','hair.png'),('brows.png','brows.png'),('eyes.png','eyes.png'),('shoes.png','shoes.png')]:shutil.copyfile(cache/src,out/dest)
+    else:shutil.copyfile(cache/'female-skin.png',out/'skin.png')
     shutil.copyfile(ROOT/'tools/human/NOTICE.md',out/'NOTICE.md')
     print('Output:',out)
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('--cache',type=pathlib.Path,default=ROOT/'.human-cache');p.add_argument('--output',type=pathlib.Path,default=ROOT/'androidApp/src/main/assets/human');args=p.parse_args();main(fetch(args.cache),args.output)
+    p=argparse.ArgumentParser();p.add_argument('--cache',type=pathlib.Path,default=ROOT/'.human-cache');p.add_argument('--output',type=pathlib.Path,default=ROOT/'androidApp/src/main/assets/human');args=p.parse_args();cache=fetch(args.cache)
+    for variant in ['caio','aurora','alex']:main(cache,args.output if variant=='caio' else args.output/variant,variant)

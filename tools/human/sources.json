@@ -114,5 +114,16 @@
     "deflate": true,
     "sha256": "862a26e335e958b70534cb5f0d7c47ef30ab148a56c42b3e9da969cf76f12963",
     "member": "skins/young_caucasian_male/young_lightskinned_male_diffuse.png"
+  },
+  "female.target": {
+    "url": "https://raw.githubusercontent.com/makehumancommunity/makehuman/a8bc2d54ff0ac92e78ff71431b1023eda42bf482/makehuman/data/targets/macrodetails/caucasian-female-young.target",
+    "sha256": "118379f6e8ba9266247fdb8788a20e1df40a239f97ced0b9905bcbcc74f6e820"
+  },
+  "female-skin.png": {
+    "url": "https://files.makehumancommunity.org/asset_packs/makehuman_system_assets/makehuman_system_assets_cc0.zip",
+    "range": "bytes=19592659-23317244",
+    "deflate": true,
+    "sha256": "8d1fb3ceedf142fad32a3504eca1feb4539aecca6de66acde1514b9a61fc7ba0",
+    "member": "skins/young_caucasian_female2/young_lightskinned_female_diffuse2.png"
   }
 }

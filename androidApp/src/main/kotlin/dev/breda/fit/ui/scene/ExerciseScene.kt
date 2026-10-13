@@ -20,8 +20,8 @@ internal data class Vec(val x:Float,val y:Float,val z:Float) {
 internal data class Material(val r:Float,val g:Float,val b:Float,val gloss:Float=.10f)
 
 /** Offline studio stage plus licensed anatomical human model. No medical simulation. */
-internal class ExerciseScene(assets:android.content.res.AssetManager) {
-    private val human=HumanModel(assets)
+internal class ExerciseScene(assets:android.content.res.AssetManager,avatar:dev.breda.fit.AvatarStyle) {
+    private val human=HumanModel(assets,avatar)
     private lateinit var sphere:FloatBuffer
     private lateinit var cap:FloatBuffer
     private lateinit var cube:FloatBuffer;private lateinit var tubeMesh:FloatBuffer

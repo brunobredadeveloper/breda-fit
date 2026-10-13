@@ -1,6 +1,7 @@
 package dev.breda.fit
 
 import kotlin.test.*
+import kotlinx.serialization.json.Json
 
 class FitTests {
     private val profile = Profile("Ana", 32, 170.0, 80.0, 70.0, 3, 100)
@@ -25,4 +26,27 @@ class FitTests {
     @Test fun rejectsInconsistentBodyComposition() { assertFailsWith<IllegalArgumentException> { Validation.measurement(Measurement(100, 70.0, fatPercent = 30.0, muscleKg = 60.0)) } }
     @Test fun zeroRestMovesDirectlyToNextWork() { val p = Plan("test", "Test", "", listOf(Interval("march", 1, 0), Interval("calf", 1, 0))); val s = SessionEngine.tick(SessionEngine.start(p), 6000); assertEquals(Phase.WORK, s.phase); assertEquals(1, s.index); assertEquals(1000, s.activeMs) }
     @Test fun exportKeepsOptionalValuesBlank() { assertTrue(CsvExporter.measurements(FitData(measurements = listOf(Measurement(100, 80.0)))).contains("100,80.0,,,")) }
+    @Test fun legacyProfileRetainsPreferredNameAndGetsOptionalDefaults() {
+        val old="""{"name":"Ana","age":32,"heightCm":170.0,"initialKg":80.0,"targetKg":70.0,"weeklySessions":3,"createdDay":100}"""
+        val p=Json.decodeFromString<Profile>(old)
+        assertEquals("Ana",p.name);assertEquals(AvatarStyle.CAIO,p.avatar);assertEquals(GenderIdentity.UNSPECIFIED,p.genderIdentity)
+        Validation.profile(p)
+    }
+    @Test fun identityAndAvatarRoundTripIndependentlyWithoutChangingStatistics() {
+        val original=FitData(profile=profile,measurements=listOf(Measurement(100,78.0)),workouts=listOf(WorkoutRecord("one","start",100,60,1,1,3)))
+        val baseline=ProgressCalculator.calculate(original,100)
+        for(identity in GenderIdentity.entries)for(avatar in AvatarStyle.entries){
+            val changed=original.copy(profile=profile.copy(name="Alex",avatar=avatar,genderIdentity=identity,genderDescription=if(identity==GenderIdentity.SELF_DESCRIBED)"Gênero fluido" else ""))
+            Validation.data(changed)
+            val restored=Json.decodeFromString<FitData>(Json.encodeToString(FitData.serializer(),changed))
+            assertEquals(changed,restored);assertEquals(baseline,ProgressCalculator.calculate(restored,100))
+            assertEquals(original.measurements,restored.measurements);assertEquals(original.workouts,restored.workouts)
+        }
+    }
+    @Test fun rejectsEmptySelfDescriptionButNeverRequiresGender() {
+        Validation.profile(profile.copy(genderIdentity=GenderIdentity.UNSPECIFIED))
+        assertFailsWith<IllegalArgumentException>{Validation.profile(profile.copy(genderIdentity=GenderIdentity.SELF_DESCRIBED))}
+        assertFailsWith<IllegalArgumentException>{Validation.profile(profile.copy(genderDescription="x"))}
+    }
+
 }

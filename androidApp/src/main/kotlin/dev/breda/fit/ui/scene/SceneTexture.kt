@@ -12,7 +12,7 @@ import android.view.View
 import dev.breda.fit.Exercise
 import kotlin.math.cos
 
-internal data class SceneInput(val exercise:Exercise,val animate:Boolean,val phase:Float,val orbit:Float)
+internal data class SceneInput(val exercise:Exercise,val animate:Boolean,val phase:Float,val orbit:Float,val avatar:dev.breda.fit.AvatarStyle=dev.breda.fit.AvatarStyle.CAIO)
 
 /** One render dispatcher; each visible scene owns and releases its EGL context/surface. */
 private object SceneGpu {
@@ -45,7 +45,7 @@ private class SceneController(
     @Volatile private var closed=false
     private var active=true;private var initialized=false;private var announced=false
     private var context:EGLContext=EGL14.EGL_NO_CONTEXT;private var surface:EGLSurface=EGL14.EGL_NO_SURFACE
-    private var nativeSurface:Surface?=null;private val scene=ExerciseScene(assets);private var origin=SystemClock.uptimeMillis()
+    private var nativeSurface:Surface?=null;private val scene=ExerciseScene(assets,input.avatar);private var origin=SystemClock.uptimeMillis()
     private val handler get()=SceneGpu.handler
     private val frame=object:Runnable {override fun run(){
         if(closed || !initialized || !active)return
