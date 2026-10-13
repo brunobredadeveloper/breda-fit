@@ -99,7 +99,14 @@ internal class HumanModel(private val assets:AssetManager) {
             val kneePreference=coord(p.knees[1-i],if(p.profile)side else .12f)+Vec(0f,0f,.12f)
             val (knee,foot)=ik(root,ankle,kneePreference,(rest[leg][1]-rest[leg][0]).length(),(rest[leg+1][1]-rest[leg+1][0]).length())
             set(leg,transform(rest[leg][0],rest[leg][1],root,knee));set(leg+1,transform(rest[leg+1][0],rest[leg+1][1],knee,foot))
-            set(leg+2,transform(rest[leg+2][0],rest[leg+2][1],foot,foot+(rest[leg+2][1]-rest[leg+2][0])))
+            val footAngle=when {
+                exercise.movement==Movement.CALF -> phase*.70f
+                exercise.movement==Movement.ANKLE && i==1 -> -.26f+phase*.52f
+                else -> 0f
+            }
+            val restToe=rest[leg+2][1]-rest[leg+2][0]
+            val toe=Vec(restToe.x,restToe.y*cos(footAngle)-restToe.z*sin(footAngle),restToe.y*sin(footAngle)+restToe.z*cos(footAngle))
+            set(leg+2,transform(rest[leg+2][0],rest[leg+2][1],foot,foot+toe))
         }
         GLES20.glUseProgram(program);GLES20.glUniformMatrix4fv(uniform("uVp"),1,false,vp,0);GLES20.glUniformMatrix4fv(uniform("uBones[0]"),16,false,palette,0)
         GLES20.glUniform3f(uniform("uEye"),eye.x,eye.y,eye.z);GLES20.glUniform1i(uniform("uTexture"),0)
