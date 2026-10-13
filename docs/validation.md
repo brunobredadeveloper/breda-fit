@@ -1,3 +1,24 @@
+# Validação 3D — Breda Fit 0.3.0 — 13/10/2026
+
+GitHub Actions [38439250615](https://github.com/brunobredadeveloper/breda-fit/actions/runs/38439250615), código `0db7348290a5f2e50fc8b78cef6c0f560486a203`: concluído com sucesso.
+
+- 17 testes do domínio KMP e 5 testes nativos de interface: **22 aprovados**.
+- GPU/EGL inicializou nos 12 exercícios e nas duas poses da cadeira. A câmera mudou os pixels renderizados; a demonstração ampliada abriu, inicializou sua cena e fechou corretamente.
+- Capturas nativas do catálogo, duas poses e tela ampliada inspecionadas. Materiais/luz e membros refinados; controles têm espaço separado dos pés.
+- Emulador Android 15/API 35, Pixel 2, GPU SwiftShader. Não é uma medição de FPS, energia ou desempenho do celular físico.
+- Lint: zero erros, quatro avisos (três atualizações de dependências e construtor de view usada exclusivamente por AndroidView, sem inflação XML).
+- Debug, preview e instrumentação compilados; assinaturas v2/v3 verificadas por apksigner.
+- APK preview: 12.858.561 bytes, SHA-256 `9479a63b186cec6ae51ee256d37dde44d2f4844045b9532a1e3ca284d3c98a49`. Digest do artefato, integridade ZIP e bloco de assinatura verificados após download.
+- ID `dev.breda.fit.preview03`, nome “Breda Fit 3D 0.3”. Instalação independente para preservar os apps anteriores; não migra dados automaticamente.
+
+Cena nativa OpenGL ES 2, original e offline. São personagens 3D estilizados com poses ilustrativas, não biomecânica clinicamente validada. Domínio, estatísticas e persistência preservados. iOS não compilado nesta execução; UI iOS não implementada.
+
+Veja [arquitetura visual](visuals.md). Teste câmera, ampliar/fechar, movimento reduzido, pausar/retomar, navegação, orientação e background no aparelho físico.
+
+---
+
+## Histórico de validação
+
 # Validação visual — Breda Fit 0.2.0 — 13/10/2026
 
 GitHub Actions [38430422213](https://github.com/brunobredadeveloper/breda-fit/actions/runs/38430422213), código `15deba70ed9089d5b62ee1c6ab5b52469a7e0c38`.
