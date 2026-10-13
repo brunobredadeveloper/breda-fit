@@ -53,11 +53,11 @@ private fun pose(m: Movement, t: Float): Pose {
     when (m) {
         Movement.SIT_STAND -> {
             profile = true
-            hip = blend(Offset(112f, 143f), Offset(91f, 182f), t)
+            hip = blend(Offset(140f, 127f), Offset(91f, 182f), t)
             shoulder = hip + Offset(7f + 19f * t, -65f)
             head = shoulder + Offset(1f, -31f)
             feet = listOf(Offset(146f, 239f), Offset(155f, 239f))
-            knees = feet.map { joint(hip, it, 57f, 59f, -1f) }
+            knees = feet.map { joint(hip, it, 54f, 58f, -1f) }
             elbows = listOf(shoulder + Offset(28f, 22f), shoulder + Offset(32f, 20f))
             hands = listOf(elbows[0] + Offset(28f, -5f), elbows[1] + Offset(28f, -5f))
         }

@@ -2,6 +2,8 @@ package dev.breda.fit
 
 import android.graphics.Bitmap
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.background
+import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -20,14 +22,13 @@ class ExerciseVisualTest {
     private fun screenshot(name: String) {
         compose.waitForIdle()
         val instrumentation = InstrumentationRegistry.getInstrumentation()
-        val image = requireNotNull(instrumentation.uiAutomation.takeScreenshot())
+        val image = compose.onRoot().captureToImage().asAndroidBitmap()
         File(instrumentation.targetContext.getExternalFilesDir(null), name).outputStream().use { image.compress(Bitmap.CompressFormat.PNG, 100, it) }
-        image.recycle()
     }
     @Test fun catalogIllustrationsRemainVisible() {
         compose.setContent {
             FitTheme {
-                Column(Modifier.fillMaxSize().padding(12.dp)) {
+                Column(Modifier.fillMaxSize().background(Ink).padding(12.dp)) {
                     Text("BREDA FIT · GUIAS VISUAIS")
                     Catalog.exercises.chunked(3).forEach { group ->
                         Row(Modifier.weight(1f).fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -49,7 +50,7 @@ class ExerciseVisualTest {
         val exercise = Catalog.exercise("chair")
         compose.setContent {
             FitTheme {
-                Column(Modifier.fillMaxSize().padding(20.dp)) {
+                Column(Modifier.fillMaxSize().background(Ink).padding(20.dp)) {
                     Text("BREDA FIT · SENTAR E LEVANTAR")
                     ExerciseArt(exercise, false, Modifier.fillMaxWidth().weight(1f), 0f)
                     Text("1 · Em pé")
