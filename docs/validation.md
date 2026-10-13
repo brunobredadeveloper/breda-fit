@@ -1,3 +1,26 @@
+# Personalização inclusiva — Breda Fit 0.5.0 — 13/10/2026
+
+GitHub Actions [38455184400](https://github.com/brunobredadeveloper/breda-fit/actions/runs/38455184400), código `1095acf43d58e4e685e6faa9c2a8469d68aa443c`: concluído com sucesso. Ativos gerados preservados no commit `40fca06592e563aaeeed8209e52d516fa5193479`.
+
+- **20 testes KMP JVM + 7 testes nativos = 27 aprovados**, zero falhas.
+- Perfil legado mantém nome e recebe defaults opcionais; serialização/restauração cobre todas as combinações de avatar e identidade, mantendo medidas, histórico e estatísticas.
+- Identidade não é obrigatória; autodescrição exige texto e tem limite. Aparência não determina identidade nem altera cálculos.
+- Teste nativo abre perfil existente com nome social, identidade não binária e avatar Aurora; edita nome para Alex e avatar para Alex; confirma o perfil salvo e a cena ativa no início. É teste com repositório falso; não afirma teste de reboot/process death/DataStore físico.
+- Três avatares inicializam efetivamente na GPU; câmera, ampliação, catálogo e poses da cadeira aprovados. Malhas distintas verificadas por digest, geometria finita, pesos normalizados e índices válidos. Cobertura dos braços sob mangas preservada após revisão das capturas.
+- Capturas nativas dos avatares/catálogo/cadeira/ampliação revisadas. Grades de teste não são telas do produto; podem alcançar a área de navegação do emulador.
+- Android 15/API 35, Pixel 2/SwiftShader; sem erros de runtime/renderização no diagnóstico desta execução. Não é benchmark nem teste em aparelho físico.
+- Lint: zero erros, quatro avisos de versões/construtor de View programática. APKs debug/preview/testes compilados e assinaturas v2/v3 verificadas por apksigner.
+- APK preview: **30.428.522 bytes**, SHA-256 `4eebb5d14d168ce5da8cf1b3d252bc55dd5ed140851043454fce6dab7838e1b4`. Digest do artefato, integridade ZIP e bloco de assinatura conferidos após download.
+- ID `dev.breda.fit.preview05`, “Breda Fit Avatares 0.5”; instalação separada, sem transferência automática de dados das versões anteriores.
+
+**Limite visual:** usa variantes MakeHuman CC0. O conceito fotorrealista aprovado é uma imagem, não um ativo 3D produzido. Não há reprodução exata, equivalência a GTA 6, rig facial profissional, captura de movimento ou Filament integrado nesta rodada. O ativo profissional e sua integração continuam pendentes, conforme [alvo visual](avatar-target.md).
+
+Identidade opcional e nome social são dados locais; não entram no CSV de medidas nem são transmitidos. Núcleo/sessões/estatísticas preservados. iOS não compilado nesta execução; UI iOS não implementada. Conteúdo de movimento continua sujeito a revisão profissional antes de publicação.
+
+---
+
+## Histórico de validação
+
 # Validação humana — Breda Fit 0.4.0 — 13/10/2026
 
 GitHub Actions [38446052966](https://github.com/brunobredadeveloper/breda-fit/actions/runs/38446052966), código `658d56ef75e2cebea18094df24eaea9195d625ff`: concluído com sucesso. Os ativos gráficos foram preservados no repositório pelo job `preserve-human-assets`, commit `f2b6925bb9b48b01bb2d0e51c595effa3407d6b3`.
