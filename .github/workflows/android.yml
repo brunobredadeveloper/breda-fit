@@ -92,9 +92,10 @@ jobs:
             adb install $(find ui-apks -name '*debug.apk' ! -name '*androidTest*' | head -1)
             adb install $(find ui-apks -name '*androidTest.apk' | head -1)
             adb shell am instrument -w -r dev.breda.fit.debug.test/androidx.test.runner.AndroidJUnitRunner | tee ui-test-result.txt
-            grep -q 'OK (4 tests)' ui-test-result.txt
+            grep -q 'OK (5 tests)' ui-test-result.txt
             adb pull /sdcard/Android/data/dev.breda.fit.debug/files/visual-catalog.png .
             adb pull /sdcard/Android/data/dev.breda.fit.debug/files/visual-chair.png .
+            adb pull /sdcard/Android/data/dev.breda.fit.debug/files/visual-expanded-3d.png .
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -103,3 +104,4 @@ jobs:
             ui-test-result.txt
             visual-catalog.png
             visual-chair.png
+            visual-expanded-3d.png

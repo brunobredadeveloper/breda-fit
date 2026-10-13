@@ -30,7 +30,7 @@ import dev.breda.fit.ui.scene.SceneTexture
                 Text("Explore o movimento de outros ângulos.",color=Mist)
                 ScenePanel(exercise,animate,Modifier.fillMaxWidth().weight(1f),fixedPhase)
                 Text(exercise.cue,color=Lime)
-                Button(onClick={expanded=false},modifier=Modifier.fillMaxWidth()){Text("Voltar ao treino")}
+                Button(onClick={expanded=false},modifier=Modifier.fillMaxWidth()){Text("Fechar demonstração")}
             }
         }
     }
@@ -41,14 +41,15 @@ import dev.breda.fit.ui.scene.SceneTexture
     var failed by remember(exercise.id){mutableStateOf(false)}
     var orbit by remember(exercise.id){mutableFloatStateOf(0f)}
     BoxWithConstraints(modifier.clip(RoundedCornerShape(24.dp)).background(Color(0xFF091319)).testTag("exercise-art-${exercise.id}").semantics{contentDescription="Demonstração 3D: ${exercise.title}. ${exercise.cue}"}) {
+        val controls=maxWidth>=180.dp && maxHeight>=150.dp
         if(failed){
             ExerciseArt2D(exercise,false,Modifier.fillMaxSize(),fixedPhase)
             Text("3D indisponível · guia ilustrado",Modifier.align(Alignment.TopCenter).padding(12.dp),color=Mist,style=MaterialTheme.typography.labelSmall)
         } else {
-            AndroidView(factory={context->SceneTexture(context,{ready=true},{failed=true})},update={it.update(SceneInput(exercise,animate,fixedPhase.coerceIn(0f,1f),orbit))},onRelease={it.release()},modifier=Modifier.fillMaxSize())
+            AndroidView(factory={context->SceneTexture(context,{ready=true},{failed=true})},update={it.update(SceneInput(exercise,animate,fixedPhase.coerceIn(0f,1f),orbit))},onRelease={it.release()},modifier=Modifier.fillMaxSize().padding(bottom=if(controls)60.dp else 0.dp))
             if(ready)Box(Modifier.size(1.dp).testTag("scene-ready-${exercise.id}"))
             if(!ready)CircularProgressIndicator(Modifier.size(24.dp).align(Alignment.Center),color=Lime)
-            if(maxWidth>=180.dp && maxHeight>=150.dp){
+            if(controls){
                 Surface(Modifier.align(Alignment.TopStart).padding(12.dp),color=Color(0xFF1C3037).copy(alpha=.92f),shape=RoundedCornerShape(8.dp)){
                     Text("3D / ${if(animate)"MOVIMENTO" else "POSTURA"}",Modifier.padding(horizontal=10.dp,vertical=6.dp),color=Lime,style=MaterialTheme.typography.labelSmall)
                 }

@@ -26,6 +26,25 @@ class ExerciseVisualTest {
         val image = compose.onRoot().captureToImage().asAndroidBitmap()
         File(instrumentation.targetContext.getExternalFilesDir(null), name).outputStream().use { image.compress(Bitmap.CompressFormat.PNG, 100, it) }
     }
+    @Test fun sceneCameraChangesRenderedFrameAndCanExpand(){
+        val exercise=Catalog.exercise("chair")
+        compose.setContent{FitTheme{ExerciseArt(exercise,false,Modifier.fillMaxSize().padding(20.dp))}}
+        compose.waitUntil(30000){compose.onAllNodesWithTag("scene-ready-chair").fetchSemanticsNodes().size==1}
+        compose.waitForIdle();Thread.sleep(500)
+        val before=compose.onNodeWithTag("exercise-art-chair").captureToImage().asAndroidBitmap()
+        val a=IntArray(before.width*before.height);before.getPixels(a,0,before.width,0,0,before.width,before.height)
+        compose.onNodeWithContentDescription("Girar personagem para a direita").performClick()
+        compose.waitForIdle();Thread.sleep(700)
+        val after=compose.onNodeWithTag("exercise-art-chair").captureToImage().asAndroidBitmap()
+        val b=IntArray(after.width*after.height);after.getPixels(b,0,after.width,0,0,after.width,after.height)
+        assertFalse("Orbit must change the rendered scene",a.contentEquals(b))
+        compose.onNodeWithText("Ampliar").performClick()
+        compose.onNodeWithText("Explore o movimento de outros ângulos.").assertIsDisplayed()
+        compose.waitUntil(30000){compose.onAllNodesWithTag("scene-ready-chair").fetchSemanticsNodes().size>=2}
+        screenshot("visual-expanded-3d.png")
+        compose.onNodeWithText("Fechar demonstração").performClick()
+        compose.onNodeWithText("Ampliar").assertIsDisplayed()
+    }
     @Test fun catalogIllustrationsRemainVisible() {
         compose.setContent {
             FitTheme {

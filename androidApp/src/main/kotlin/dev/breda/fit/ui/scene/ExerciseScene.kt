@@ -23,6 +23,8 @@ internal data class Material(val r:Float,val g:Float,val b:Float,val gloss:Float
 internal class ExerciseScene {
     private lateinit var sphere:FloatBuffer
     private lateinit var cap:FloatBuffer
+    private lateinit var cube:FloatBuffer;private lateinit var tubeMesh:FloatBuffer
+    private var tubeCount=0
     private var sphereCount=0;private var capCount=0;private var program=0
     private val model=FloatArray(16);private val view=FloatArray(16);private val projection=FloatArray(16)
     private val vp=FloatArray(16);private val mvp=FloatArray(16);private val inverse=FloatArray(16);private val normal=FloatArray(16)
@@ -50,7 +52,7 @@ internal class ExerciseScene {
                 vec3 key=normalize(vec3(-0.7,1.2,1.0));vec3 fill=normalize(vec3(1.0,0.4,-0.6));
                 float diffuse=max(dot(n,key),0.0);float rim=pow(1.0-max(dot(n,eye),0.0),3.0);
                 float spec=pow(max(dot(n,normalize(key+eye)),0.0),28.0)*uColor.a;
-                vec3 light=vec3(0.31+0.60*diffuse+0.18*max(dot(n,fill),0.0));
+                vec3 light=vec3(0.42+0.64*diffuse+0.22*max(dot(n,fill),0.0));
                 vec3 rgb=uColor.rgb*light+vec3(spec)+vec3(0.10,0.16,0.18)*rim;
                 gl_FragColor=vec4(pow(max(rgb,vec3(0.0)),vec3(0.85)),1.0);
             }
@@ -64,6 +66,7 @@ internal class ExerciseScene {
         uColor=GLES20.glGetUniformLocation(program,"uColor");uEye=GLES20.glGetUniformLocation(program,"uEye")
         val full=mesh(-PI/2,PI/2);sphere=full.first;sphereCount=full.second
         val top=mesh(0.0,PI/2);cap=top.first;capCount=top.second
+        cube=boxMesh();val cylinder=cylinderMesh();tubeMesh=cylinder.first;tubeCount=cylinder.second
         GLES20.glEnable(GLES20.GL_DEPTH_TEST)
     }
     private fun shader(type:Int,source:String):Int {
@@ -78,22 +81,43 @@ internal class ExerciseScene {
         }
         return ByteBuffer.allocateDirect(values.size*4).order(ByteOrder.nativeOrder()).asFloatBuffer().apply{put(values.toFloatArray());position(0)} to values.size/6
     }
-    private fun ellipsoid(center:Vec,size:Vec,material:Material,top:Boolean=false,angle:Float=0f,axis:Vec=Vec(0f,1f,0f)) {
+    private fun boxMesh():FloatBuffer {
+        val points=ArrayList<Float>()
+        fun face(normal:Vec,a:Vec,b:Vec,c:Vec,d:Vec){for(v in listOf(a,b,c,a,c,d))points.addAll(listOf(v.x,v.y,v.z,normal.x,normal.y,normal.z))}
+        face(Vec(0f,0f,1f),Vec(-1f,-1f,1f),Vec(1f,-1f,1f),Vec(1f,1f,1f),Vec(-1f,1f,1f))
+        face(Vec(0f,0f,-1f),Vec(1f,-1f,-1f),Vec(-1f,-1f,-1f),Vec(-1f,1f,-1f),Vec(1f,1f,-1f))
+        face(Vec(1f,0f,0f),Vec(1f,-1f,1f),Vec(1f,-1f,-1f),Vec(1f,1f,-1f),Vec(1f,1f,1f))
+        face(Vec(-1f,0f,0f),Vec(-1f,-1f,-1f),Vec(-1f,-1f,1f),Vec(-1f,1f,1f),Vec(-1f,1f,-1f))
+        face(Vec(0f,1f,0f),Vec(-1f,1f,1f),Vec(1f,1f,1f),Vec(1f,1f,-1f),Vec(-1f,1f,-1f))
+        face(Vec(0f,-1f,0f),Vec(-1f,-1f,-1f),Vec(1f,-1f,-1f),Vec(1f,-1f,1f),Vec(-1f,-1f,1f))
+        return ByteBuffer.allocateDirect(points.size*4).order(ByteOrder.nativeOrder()).asFloatBuffer().apply{put(points.toFloatArray());position(0)}
+    }
+    private fun cylinderMesh():Pair<FloatBuffer,Int> {
+        val points=ArrayList<Float>()
+        fun vertex(y:Float,r:Float,angle:Double,cap:Float=0f){val x=cos(angle).toFloat();val z=sin(angle).toFloat();points.addAll(listOf(x*r,y,z*r,if(cap==0f)x else 0f,if(cap==0f).075f else cap,if(cap==0f)z else 0f))}
+        for(i in 0 until 32){val a=2*PI*i/32;val b=2*PI*(i+1)/32
+            vertex(-1f,1f,a);vertex(1f,.85f,a);vertex(1f,.85f,b);vertex(-1f,1f,a);vertex(1f,.85f,b);vertex(-1f,1f,b)
+            vertex(1f,0f,0.0,1f);vertex(1f,.85f,a,1f);vertex(1f,.85f,b,1f)
+            vertex(-1f,0f,0.0,-1f);vertex(-1f,1f,b,-1f);vertex(-1f,1f,a,-1f)
+        }
+        return ByteBuffer.allocateDirect(points.size*4).order(ByteOrder.nativeOrder()).asFloatBuffer().apply{put(points.toFloatArray());position(0)} to points.size/6
+    }
+    private fun ellipsoid(center:Vec,size:Vec,material:Material,top:Boolean=false,angle:Float=0f,axis:Vec=Vec(0f,1f,0f),box:Boolean=false,tube:Boolean=false) {
         Matrix.setIdentityM(model,0);Matrix.translateM(model,0,center.x,center.y,center.z)
         if(angle!=0f)Matrix.rotateM(model,0,angle,axis.x,axis.y,axis.z)
         Matrix.scaleM(model,0,size.x.coerceAtLeast(.001f),size.y.coerceAtLeast(.001f),size.z.coerceAtLeast(.001f))
         Matrix.multiplyMM(mvp,0,vp,0,model,0);Matrix.invertM(inverse,0,model,0);Matrix.transposeM(normal,0,inverse,0)
         GLES20.glUniformMatrix4fv(uModel,1,false,model,0);GLES20.glUniformMatrix4fv(uMvp,1,false,mvp,0);GLES20.glUniformMatrix4fv(uNormal,1,false,normal,0)
         GLES20.glUniform4f(uColor,material.r,material.g,material.b,material.gloss)
-        val buffer=if(top)cap else sphere;buffer.position(0);GLES20.glVertexAttribPointer(aPosition,3,GLES20.GL_FLOAT,false,24,buffer)
+        val buffer=when{box->cube;tube->tubeMesh;top->cap;else->sphere};buffer.position(0);GLES20.glVertexAttribPointer(aPosition,3,GLES20.GL_FLOAT,false,24,buffer)
         buffer.position(3);GLES20.glVertexAttribPointer(aNormal,3,GLES20.GL_FLOAT,false,24,buffer)
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES,0,if(top)capCount else sphereCount)
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES,0,when{box->36;tube->tubeCount;top->capCount;else->sphereCount})
     }
-    private fun bone(a:Vec,b:Vec,radius:Float,material:Material,depth:Float=radius) {
+    private fun bone(a:Vec,b:Vec,radius:Float,material:Material,depth:Float=radius,tube:Boolean=true) {
         val delta=b-a;val length=delta.length().coerceAtLeast(.001f)
         val angle=acos((delta.y/length).coerceIn(-1f,1f))*180f/PI.toFloat()
         val axis=Vec(delta.z,0f,-delta.x).let{if(it.length()<.0001f)Vec(1f,0f,0f)else it}
-        ellipsoid((a+b)*.5f,Vec(radius,length*.5f+radius*.6f,depth),material,angle=angle,axis=axis)
+        ellipsoid((a+b)*.5f,Vec(radius,if(tube)length*.5f else length*.5f+radius*.6f,depth),material,angle=angle,axis=axis,tube=tube)
     }
     fun draw(exercise:Exercise,phase:Float,orbit:Float,width:Int,height:Int) {
         GLES20.glViewport(0,0,width,height);GLES20.glClearColor(.035f,.075f,.09f,1f);GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT)
@@ -112,20 +136,20 @@ internal class ExerciseScene {
         ellipsoid(Vec(hip.x,-.014f,hip.z),Vec(.40f,.008f,.36f),Material(.025f,.05f,.055f,0f))
         if(exercise.seated || exercise.movement==Movement.SIT_STAND) chair(if(exercise.seated).65f else .58f)
         if(exercise.movement==Movement.BACK_LEG) chair(.82f,.75f)
-        if(exercise.movement==Movement.WALL_PUSH){bone(Vec(-.43f,0f,.98f),Vec(-.43f,2.04f,.98f),.027f,Material(.35f,.49f,.48f));bone(Vec(.43f,0f,.98f),Vec(.43f,2.04f,.98f),.027f,Material(.35f,.49f,.48f));ellipsoid(Vec(0f,1.02f,1.03f),Vec(.46f,1.04f,.055f),Material(.16f,.27f,.29f))}
+        if(exercise.movement==Movement.WALL_PUSH){bone(Vec(-.43f,0f,.98f),Vec(-.43f,2.04f,.98f),.027f,Material(.35f,.49f,.48f));bone(Vec(.43f,0f,.98f),Vec(.43f,2.04f,.98f),.027f,Material(.35f,.49f,.48f));ellipsoid(Vec(0f,1.02f,1.03f),Vec(.46f,1.04f,.055f),Material(.16f,.27f,.29f),box=true)}
         for(i in 0..1){val side=if(i==0)-.12f else .12f;val knee=coordinate(pose.knees[i],if(pose.profile)side else .015f);val foot=coordinate(pose.feet[i],if(pose.profile)side else .02f)
-            val root=hip+Vec(side,0f,0f);bone(root,knee,.10f,trousers,.10f);bone(knee,foot,.075f,trousers);ellipsoid(knee,Vec(.08f,.08f,.08f),trousers)
+            val root=hip+Vec(side,0f,0f);bone(root,knee,.10f,trousers,.10f);bone(knee,foot,.075f,trousers);ellipsoid(knee,Vec(.076f,.076f,.076f),trousers)
             val tilt=if(exercise.movement==Movement.ANKLE && i==0)-15f+phase*30f else if(exercise.movement==Movement.CALF)phase*12f else 0f
             ellipsoid(foot+Vec(0f,-.032f,.065f),Vec(.086f,.020f,.16f),Material(.045f,.09f,.10f),angle=tilt,axis=Vec(1f,0f,0f))
             ellipsoid(foot+Vec(0f,.008f,.065f),Vec(.083f,.057f,.15f),shoe,angle=tilt,axis=Vec(1f,0f,0f))
             ellipsoid(foot+Vec(0f,.04f,.10f),Vec(.044f,.023f,.065f),accent)
         }
         ellipsoid(hip+Vec(0f,-.005f,0f),Vec(.22f,.14f,.15f),trousers)
-        bone(hip,shoulder,.245f,shirt,.16f)
+        bone(hip,shoulder,.245f,shirt,.16f,tube=false)
         for(i in 0..1){val side=if(i==0)-.22f else .22f
             val start=shoulder+Vec(side,-.015f,0f);val elbow=coordinate(pose.elbows[i],if(pose.profile)side else 0f);val hand=coordinate(pose.hands[i],if(pose.profile)side else .025f)
             bone(start,elbow,.062f,skin);bone(start,start+(elbow-start)*.40f,.09f,shirt)
-            ellipsoid(elbow,Vec(.062f,.064f,.062f),skin);bone(elbow,hand,.048f,skin);ellipsoid(hand,Vec(.047f,.070f,.036f),skin)
+            ellipsoid(elbow,Vec(.052f,.054f,.052f),skin);bone(elbow,hand,.048f,skin);ellipsoid(hand,Vec(.047f,.070f,.036f),skin);ellipsoid(hand+Vec(if(i==0).035f else -.035f,-.004f,.009f),Vec(.020f,.029f,.025f),skin)
         }
         bone(shoulder,head+Vec(0f,-.11f,0f),.061f,skin)
         ellipsoid(head,Vec(.15f,.205f,.145f),skin)
