@@ -23,7 +23,7 @@ import dev.breda.fit.*
 import kotlin.math.*
 
 /** Illustration geometry only: independent from workout timing, records and health indicators. */
-private data class Pose(
+internal data class Pose(
     val head: Offset, val shoulder: Offset, val hip: Offset,
     val knees: List<Offset>, val feet: List<Offset>,
     val elbows: List<Offset>, val hands: List<Offset>, val profile: Boolean = false
@@ -41,7 +41,7 @@ private fun joint(a: Offset, b: Offset, upper: Float, lower: Float, bend: Float)
     return a + direction * along + Offset(-direction.y, direction.x) * height * bend
 }
 
-private fun pose(m: Movement, t: Float): Pose {
+internal fun pose(m: Movement, t: Float): Pose {
     var shoulder = Offset(119f, 79f)
     var hip = Offset(119f, 145f)
     var head = Offset(119f, 48f)
@@ -217,13 +217,13 @@ private fun DrawScope.figure(exercise: Exercise, phase: Float) {
     }
 }
 
-@Composable fun ExerciseArt(exercise: Exercise, animate: Boolean, modifier: Modifier = Modifier, fixedPhase: Float = 0f) {
+@Composable internal fun ExerciseArt2D(exercise: Exercise, animate: Boolean, modifier: Modifier = Modifier, fixedPhase: Float = 0f) {
     val phase = if (animate) {
         val transition = rememberInfiniteTransition(label = "Exercise illustration")
         val value by transition.animateFloat(0f, 1f, infiniteRepeatable(tween(1800, easing = FastOutSlowInEasing), RepeatMode.Reverse), label = "Demonstration phase")
         value
     } else fixedPhase.coerceIn(0f, 1f)
-    BoxWithConstraints(modifier.clip(RoundedCornerShape(24.dp)).background(Brush.verticalGradient(listOf(Color(0xFF243E33), Color(0xFF162820)))).testTag("exercise-art-${exercise.id}").semantics { contentDescription = "Ilustração de ${exercise.title}. ${exercise.cue}" }) {
+    BoxWithConstraints(modifier.clip(RoundedCornerShape(24.dp)).background(Brush.verticalGradient(listOf(Color(0xFF243E33), Color(0xFF162820)))).testTag("exercise-art-2d-${exercise.id}").semantics { contentDescription = "Ilustração de ${exercise.title}. ${exercise.cue}" }) {
         Canvas(Modifier.fillMaxSize()) {
             drawCircle(Brush.radialGradient(listOf(Shirt.copy(alpha=.09f), Color.Transparent), center=Offset(size.width*.5f,size.height*.45f), radius=size.minDimension*.6f), radius=size.minDimension*.6f, center=Offset(size.width*.5f,size.height*.45f))
             val ratio = minOf(size.width / 250f, size.height / 270f)

@@ -2,11 +2,11 @@
 
 App Android de exercícios em casa e acompanhamento corporal, com núcleo **Kotlin Multiplatform**. Interface nativa Jetpack Compose / Material 3, identidade em verde-lima, grafite e azul e ilustrações vetoriais originais.
 
-## Atualização visual 0.2
+## Demonstrações 3D · 0.3
 
-Personagens originais com proporções mais naturais, roupa, rosto, luz/sombra e cenários. Poses e animações revisadas nos 12 movimentos, comparação início/movimento e respeito ao movimento reduzido. Veja [detalhes visuais e limites](docs/visuals.md).
+Personagem tridimensional original, iluminação, perspectiva, cenário, cadeira/parede em 3D e movimentos articulados. Controles para girar e ampliar; offline, com movimento reduzido e fallback vetorial informado em caso de GPU indisponível. Veja [arquitetura visual e limites](docs/visuals.md).
 
-Avaliação: `Breda Fit Visual 0.2` (`dev.breda.fit.preview02`) instala ao lado do app anterior; seus dados antigos permanecem nele.
+Avaliação: **Breda Fit 3D 0.3** (`dev.breda.fit.preview03`), instalada ao lado das versões anteriores. Os dados antigos permanecem nelas.
 
 ## O que está implementado
 

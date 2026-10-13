@@ -200,7 +200,7 @@ fun date(day: Long): String = LocalDate.ofEpochDay(day).format(DateTimeFormatter
             Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
                 Text("UMA ROTINA. UM PASSO.", color = Lime, style = MaterialTheme.typography.labelLarge)
                 Text("Comece no\nseu ritmo", style = MaterialTheme.typography.headlineLarge)
-                ExerciseArt(Catalog.exercise("chair"), !ui.data.preferences.reducedMotion, Modifier.fillMaxWidth().height(180.dp))
+                ExerciseArt(Catalog.exercise("chair"), !ui.data.preferences.reducedMotion, Modifier.fillMaxWidth().height(250.dp))
                 Text("${Catalog.plans[0].durationSeconds / 60} min • baixo impacto • cadeira", color = Mist)
                 Primary("Ver treino de hoje") { vm.page(Page.PLANS) }
             }

@@ -2,7 +2,7 @@ plugins { id("com.android.application"); id("org.jetbrains.kotlin.plugin.compose
 android {
     namespace = "dev.breda.fit"
     compileSdk = 37
-    defaultConfig { applicationId = "dev.breda.fit"; minSdk = 26; targetSdk = 37; versionCode = 2; versionName = "0.2.0"; testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner" }
+    defaultConfig { applicationId = "dev.breda.fit"; minSdk = 26; targetSdk = 37; versionCode = 3; versionName = "0.3.0"; testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner" }
     buildFeatures { compose = true; resValues = true }
     compileOptions { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }
     signingConfigs {
@@ -18,7 +18,7 @@ android {
     }
     buildTypes {
         debug { signingConfig = signingConfigs.getByName("debug"); applicationIdSuffix = ".debug"; versionNameSuffix = "-debug"; resValue("string", "app_name", "Breda Fit · avaliação") }
-        create("preview") { initWith(getByName("debug")); applicationIdSuffix = ".preview02"; versionNameSuffix = "-preview"; resValue("string", "app_name", "Breda Fit Visual 0.2"); matchingFallbacks += listOf("debug") }
+        create("preview") { initWith(getByName("debug")); applicationIdSuffix = ".preview03"; versionNameSuffix = "-preview"; resValue("string", "app_name", "Breda Fit 3D 0.3"); matchingFallbacks += listOf("debug") }
         release { isMinifyEnabled = true; isShrinkResources = true; proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro") }
     }
 }

@@ -44,6 +44,7 @@ class ExerciseVisualTest {
                 }
             }
         }
+        compose.waitUntil(30000){Catalog.exercises.all{compose.onAllNodesWithTag("scene-ready-${it.id}").fetchSemanticsNodes().isNotEmpty()}}
         Catalog.exercises.forEach { compose.onNodeWithTag("exercise-art-${it.id}").assertIsDisplayed() }
         screenshot("visual-catalog.png")
     }
@@ -60,6 +61,7 @@ class ExerciseVisualTest {
                 }
             }
         }
+        compose.waitUntil(30000){compose.onAllNodesWithTag("scene-ready-chair").fetchSemanticsNodes().size==2}
         assertEquals(2, compose.onAllNodesWithTag("exercise-art-chair").fetchSemanticsNodes().size)
         screenshot("visual-chair.png")
     }
