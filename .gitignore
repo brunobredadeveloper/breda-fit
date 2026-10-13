@@ -7,4 +7,3 @@ local.properties
 .idea/
 *.iml
 
-!test-signing/fit-debug.keystore
