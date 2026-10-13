@@ -30,7 +30,7 @@ internal class SceneTexture(context:Context,private val ready:()->Unit,private v
     private var visible=true
     init {isOpaque=true;surfaceTextureListener=this;importantForAccessibility=View.IMPORTANT_FOR_ACCESSIBILITY_NO}
     fun update(value:SceneInput){if(input==value)return;input=value;controller?.update(value)}
-    override fun onSurfaceTextureAvailable(texture:SurfaceTexture,width:Int,height:Int){val value=input?:return;controller=SceneController(texture,value,width,height,{post{ready()}},{post{failed()}}).also{it.start();it.visibility(visible)}}
+    override fun onSurfaceTextureAvailable(texture:SurfaceTexture,width:Int,height:Int){val value=input?:return;controller=SceneController(context.applicationContext.assets,texture,value,width,height,{post{ready()}},{post{failed()}}).also{it.start();it.visibility(visible)}}
     override fun onSurfaceTextureSizeChanged(texture:SurfaceTexture,width:Int,height:Int){controller?.resize(width,height)}
     override fun onSurfaceTextureDestroyed(texture:SurfaceTexture):Boolean {val c=controller;controller=null;if(c!=null){c.close(true);return false};return true}
     override fun onSurfaceTextureUpdated(texture:SurfaceTexture){}
@@ -39,13 +39,13 @@ internal class SceneTexture(context:Context,private val ready:()->Unit,private v
 }
 
 private class SceneController(
-    private val texture:SurfaceTexture,private var input:SceneInput,private var width:Int,private var height:Int,
+    private val assets:android.content.res.AssetManager,private val texture:SurfaceTexture,private var input:SceneInput,private var width:Int,private var height:Int,
     private val ready:()->Unit,private val failed:()->Unit
 ) {
     @Volatile private var closed=false
     private var active=true;private var initialized=false;private var announced=false
     private var context:EGLContext=EGL14.EGL_NO_CONTEXT;private var surface:EGLSurface=EGL14.EGL_NO_SURFACE
-    private var nativeSurface:Surface?=null;private val scene=ExerciseScene();private var origin=SystemClock.uptimeMillis()
+    private var nativeSurface:Surface?=null;private val scene=ExerciseScene(assets);private var origin=SystemClock.uptimeMillis()
     private val handler get()=SceneGpu.handler
     private val frame=object:Runnable {override fun run(){
         if(closed || !initialized || !active)return

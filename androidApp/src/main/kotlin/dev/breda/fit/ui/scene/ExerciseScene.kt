@@ -19,8 +19,9 @@ internal data class Vec(val x:Float,val y:Float,val z:Float) {
 }
 internal data class Material(val r:Float,val g:Float,val b:Float,val gloss:Float=.10f)
 
-/** Original procedural meshes. No network model downloads or medical simulation. */
-internal class ExerciseScene {
+/** Offline studio stage plus licensed anatomical human model. No medical simulation. */
+internal class ExerciseScene(assets:android.content.res.AssetManager) {
+    private val human=HumanModel(assets)
     private lateinit var sphere:FloatBuffer
     private lateinit var cap:FloatBuffer
     private lateinit var cube:FloatBuffer;private lateinit var tubeMesh:FloatBuffer
@@ -68,6 +69,7 @@ internal class ExerciseScene {
         val top=mesh(0.0,PI/2);cap=top.first;capCount=top.second
         cube=boxMesh();val cylinder=cylinderMesh();tubeMesh=cylinder.first;tubeCount=cylinder.second
         GLES20.glEnable(GLES20.GL_DEPTH_TEST)
+        human.initialize()
     }
     private fun shader(type:Int,source:String):Int {
         val s=GLES20.glCreateShader(type);GLES20.glShaderSource(s,source);GLES20.glCompileShader(s)
@@ -137,35 +139,8 @@ internal class ExerciseScene {
         if(exercise.seated || exercise.movement==Movement.SIT_STAND) chair(if(exercise.seated).65f else .58f)
         if(exercise.movement==Movement.BACK_LEG) chair(.82f,.75f)
         if(exercise.movement==Movement.WALL_PUSH){bone(Vec(-.43f,0f,.98f),Vec(-.43f,2.04f,.98f),.027f,Material(.35f,.49f,.48f));bone(Vec(.43f,0f,.98f),Vec(.43f,2.04f,.98f),.027f,Material(.35f,.49f,.48f));ellipsoid(Vec(0f,1.02f,1.03f),Vec(.46f,1.04f,.055f),Material(.16f,.27f,.29f),box=true)}
-        for(i in 0..1){val side=if(i==0)-.12f else .12f;val knee=coordinate(pose.knees[i],if(pose.profile)side else .015f);val foot=coordinate(pose.feet[i],if(pose.profile)side else .02f)
-            val root=hip+Vec(side,0f,0f);bone(root,knee,.10f,trousers,.10f);bone(knee,foot,.075f,trousers);ellipsoid(knee,Vec(.076f,.076f,.076f),trousers)
-            val tilt=if(exercise.movement==Movement.ANKLE && i==0)-15f+phase*30f else if(exercise.movement==Movement.CALF)phase*12f else 0f
-            ellipsoid(foot+Vec(0f,-.032f,.065f),Vec(.086f,.020f,.16f),Material(.045f,.09f,.10f),angle=tilt,axis=Vec(1f,0f,0f))
-            ellipsoid(foot+Vec(0f,.008f,.065f),Vec(.083f,.057f,.15f),shoe,angle=tilt,axis=Vec(1f,0f,0f))
-            ellipsoid(foot+Vec(0f,.04f,.10f),Vec(.044f,.023f,.065f),accent)
-        }
-        ellipsoid(hip+Vec(0f,-.005f,0f),Vec(.22f,.14f,.15f),trousers)
-        bone(hip,shoulder,.245f,shirt,.16f,tube=false)
-        for(i in 0..1){val side=if(i==0)-.22f else .22f
-            val start=shoulder+Vec(side,-.015f,0f);val elbow=coordinate(pose.elbows[i],if(pose.profile)side else 0f);val hand=coordinate(pose.hands[i],if(pose.profile)side else .025f)
-            bone(start,elbow,.062f,skin);bone(start,start+(elbow-start)*.40f,.09f,shirt)
-            ellipsoid(elbow,Vec(.052f,.054f,.052f),skin);bone(elbow,hand,.048f,skin);ellipsoid(hand,Vec(.047f,.070f,.036f),skin);ellipsoid(hand+Vec(if(i==0).035f else -.035f,-.004f,.009f),Vec(.020f,.029f,.025f),skin)
-        }
-        bone(shoulder,head+Vec(0f,-.11f,0f),.061f,skin)
-        ellipsoid(head,Vec(.15f,.205f,.145f),skin)
-        ellipsoid(head+Vec(0f,.04f,-.05f),Vec(.155f,.19f,.137f),hair,true)
-        ellipsoid(head+Vec(-.01f,.132f,.055f),Vec(.145f,.055f,.103f),hair)
-        for(side in listOf(-1f,1f)){
-            ellipsoid(head+Vec(side*.148f,.00f,.00f),Vec(.027f,.043f,.027f),skin)
-            ellipsoid(head+Vec(side*.056f,.025f,.134f),Vec(.027f,.030f,.015f),Material(.94f,.96f,.91f,.10f))
-            ellipsoid(head+Vec(side*.056f,.024f,.148f),Vec(.012f,.017f,.007f),hair)
-            bone(head+Vec(side*.075f,.069f,.127f),head+Vec(side*.040f,.072f,.140f),.007f,hair)
-        }
-        ellipsoid(head+Vec(0f,-.025f,.150f),Vec(.027f,.035f,.035f),skin)
-        bone(head+Vec(-.033f,-.091f,.123f),head+Vec(.033f,-.091f,.123f),.008f,Material(.43f,.21f,.17f,.02f))
-        // Small original breda_dev outfit mark.
-        ellipsoid(shoulder+Vec(-.10f,-.16f,.160f),Vec(.025f,.028f,.007f),Material(.91f,.99f,.77f,.02f))
         GLES20.glDisableVertexAttribArray(aPosition);GLES20.glDisableVertexAttribArray(aNormal)
+        human.draw(exercise,phase,vp,eye)
     }
     private fun chair(seat:Float,z:Float=-.38f){
         val frame=Material(.32f,.42f,.43f,.22f);val cushion=Material(.18f,.30f,.30f,.04f)
@@ -174,5 +149,5 @@ internal class ExerciseScene {
         for(x in listOf(-.30f,.30f))bone(Vec(x,seat,z-.25f),Vec(x,seat+.58f,z-.25f),.023f,frame)
         ellipsoid(Vec(0f,seat+.37f,z-.25f),Vec(.34f,.22f,.042f),cushion)
     }
-    fun dispose(){if(program!=0)GLES20.glDeleteProgram(program);program=0}
+    fun dispose(){human.dispose();if(program!=0)GLES20.glDeleteProgram(program);program=0}
 }

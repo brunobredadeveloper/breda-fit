@@ -1,12 +1,14 @@
 # Breda Fit · breda_dev
 
-App Android de exercícios em casa e acompanhamento corporal, com núcleo **Kotlin Multiplatform**. Interface nativa Jetpack Compose / Material 3, identidade em verde-lima, grafite e azul e ilustrações vetoriais originais.
+App Android de exercícios em casa e acompanhamento corporal, com núcleo **Kotlin Multiplatform**. Interface nativa Jetpack Compose / Material 3, identidade em verde-lima, grafite e azul e demonstrações humanas em 3D.
 
-## Demonstrações 3D · 0.3
+## Demonstrações humanas · 0.4
 
-Personagem tridimensional original, iluminação, perspectiva, cenário, cadeira/parede em 3D e movimentos articulados. Controles para girar e ampliar; offline, com movimento reduzido e fallback vetorial informado em caso de GPU indisponível. Veja [arquitetura visual e limites](docs/visuals.md).
+Modelo humano adulto detalhado, com anatomia, rosto, dedos, textura de pele, olhos e cabelo, baseado em ativos gráficos CC0 do MakeHuman Community. Roupa com a paleta da breda_dev, tênis, iluminação com materiais de rugosidade distinta e animação por esqueleto na GPU. Não é uma pessoa real digitalizada nem uma simulação biomecânica.
 
-Avaliação: **Breda Fit 3D 0.3** (`dev.breda.fit.preview03`), instalada ao lado das versões anteriores. Os dados antigos permanecem nelas.
+Controles para girar e ampliar; funcionamento offline, movimento reduzido e fallback vetorial informado em caso de GPU indisponível. Veja [arquitetura visual e limites](docs/visuals.md) e [licenças e proveniência](tools/human/NOTICE.md).
+
+Avaliação: **Breda Fit Humano 0.4** (`dev.breda.fit.preview04`), instalada ao lado das versões anteriores. Os dados antigos permanecem nelas, sem transferência automática.
 
 ## O que está implementado
 
@@ -35,8 +37,11 @@ MVVM + Clean Architecture. O domínio não depende de Android. Repository/Adapte
 JDK 17, Android SDK 37.0, build-tools 36.0.0. Gradle 9.4.1, AGP 9.2.1, Kotlin 2.4.21, Compose BOM 2026.09.00. Android 8+ (minSdk 26). As versões são fixadas para um conjunto estável e reproduzível, sem APIs alpha.
 
 ```sh
+python3 tools/human/build_model.py
 ./gradlew :shared:jvmTest :androidApp:lintDebug :androidApp:assembleDebug
 ```
+
+O conversor verifica SHA-256 de todos os ativos e gera as malhas empacotadas. A primeira execução precisa de rede; builds posteriores usam cache local ou os ativos preservados na pasta `assets/human`. Nenhum download ocorre no aplicativo.
 
 APK: `androidApp/build/outputs/apk/debug/androidApp-debug.apk`. Inclui toda a aplicação; não precisa de computador, Metro ou servidor. Assinatura debug é para avaliação interna. A esteira gera uma chave temporária; nenhum keystore é versionado. Builds diferentes podem exigir desinstalação do APK anterior; exporte dados de teste antes. O aplicativo de teste usa ID `dev.breda.fit.debug`, separado do ID de produção `dev.breda.fit`. Produção utiliza uma chave privada separada. Produção precisa de chave privada do titular, AAB e revisão de publicação.
 

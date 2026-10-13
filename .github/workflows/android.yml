@@ -21,6 +21,8 @@ jobs:
           log-accepted-android-sdk-licenses: false
       - uses: gradle/actions/setup-gradle@v4
       - run: chmod +x gradlew
+      - name: Prepare verified CC0 human assets
+        run: python3 tools/human/build_model.py
       - name: Generate ephemeral debug signing key
         run: |
           mkdir -p "$HOME/.android"
@@ -43,6 +45,11 @@ jobs:
             androidApp/build/outputs/apk/androidTest/debug/*.apk
           if-no-files-found: error
           retention-days: 30
+      - uses: actions/upload-artifact@v4
+        with:
+          name: breda-fit-human-assets
+          path: androidApp/src/main/assets/human/
+          if-no-files-found: error
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -105,3 +112,27 @@ jobs:
             visual-catalog.png
             visual-chair.png
             visual-expanded-3d.png
+
+  preserve-human-assets:
+    needs: [android, visual-ui]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/download-artifact@v4
+        with:
+          name: breda-fit-human-assets
+          path: androidApp/src/main/assets/human
+      - name: Preserve verified graphical assets for offline developer builds
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add androidApp/src/main/assets/human
+          if ! git diff --cached --quiet; then
+            git commit -m "Preserve verified CC0 human assets [skip ci]"
+            git push origin HEAD:main
+          fi
