@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.background
 import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.graphics.Color
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -29,13 +30,13 @@ class ExerciseVisualTest {
         compose.setContent {
             FitTheme {
                 Column(Modifier.fillMaxSize().background(Ink).padding(12.dp)) {
-                    Text("BREDA FIT · GUIAS VISUAIS")
+                    Text("BREDA FIT · GUIAS VISUAIS", color=Color.White)
                     Catalog.exercises.chunked(3).forEach { group ->
                         Row(Modifier.weight(1f).fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                             group.forEach { exercise ->
                                 Column(Modifier.weight(1f)) {
                                     ExerciseArt(exercise, false, Modifier.fillMaxWidth().weight(1f), .8f)
-                                    Text(exercise.title, maxLines=2)
+                                    Text(exercise.title, maxLines=2, color=Color.White)
                                 }
                             }
                         }
@@ -51,11 +52,11 @@ class ExerciseVisualTest {
         compose.setContent {
             FitTheme {
                 Column(Modifier.fillMaxSize().background(Ink).padding(20.dp)) {
-                    Text("BREDA FIT · SENTAR E LEVANTAR")
+                    Text("BREDA FIT · SENTAR E LEVANTAR", color=Color.White)
                     ExerciseArt(exercise, false, Modifier.fillMaxWidth().weight(1f), 0f)
-                    Text("1 · Em pé")
+                    Text("1 · Em pé", color=Color.White)
                     ExerciseArt(exercise, false, Modifier.fillMaxWidth().weight(1f), 1f)
-                    Text("2 · Sentado")
+                    Text("2 · Sentado", color=Color.White)
                 }
             }
         }

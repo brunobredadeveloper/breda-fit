@@ -2,7 +2,7 @@
 
 Os 12 exercícios utilizam um personagem vetorial original, desenhado em Compose Canvas: rosto, cabelo, camiseta com luz/sombra, calça, tênis, membros em camadas e cadeira/parede quando aplicável. Cenário com gradiente, luz ambiente, sombra de contato e piso. Nenhuma imagem remota, SDK de anúncios ou download é necessário.
 
-Poses ficam separadas das funções de desenho. Uma articulação de dois segmentos mantém as pernas conectadas no sentar/levantar, miniagachamento e poses laterais. A extensão de joelho usa um arco em torno do joelho, enquanto tornozelos giram o pé. As figuras são guias ilustrativos, não uma simulação biomecânica validada.
+Poses ficam separadas das funções de desenho. Uma articulação de dois segmentos mantém as pernas conectadas no sentar/levantar e na flexão de parede; as demais poses utilizam pontos articulados específicos. A extensão de joelho usa um arco em torno do joelho, enquanto tornozelos giram o pé. As figuras são guias ilustrativos, não uma simulação biomecânica validada.
 
 Animações têm aceleração/desaceleração suave; a preferência de movimento reduzido mostra uma postura fixa, inclusive nas boas-vindas. A sessão continua a controlar sua própria pausa/tempo: a animação não conta repetições e não altera duração, histórico ou estatísticas. Comparações inicial/movimento continuam disponíveis. TalkBack recebe título e orientação textual.
 

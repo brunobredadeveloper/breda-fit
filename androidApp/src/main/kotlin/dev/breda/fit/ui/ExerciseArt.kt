@@ -62,10 +62,10 @@ private fun pose(m: Movement, t: Float): Pose {
             hands = listOf(elbows[0] + Offset(28f, -5f), elbows[1] + Offset(28f, -5f))
         }
         Movement.SQUAT -> {
-            hip += Offset(0f, t * 25f); shoulder += Offset(0f, t * 25f); head += Offset(0f, t * 25f)
-            knees = listOf(joint(hip, feet[0], 51f, 50f, 1f), joint(hip, feet[1], 51f, 50f, -1f))
-            elbows = listOf(Offset(86f, 98f + t * 25f), Offset(152f, 98f + t * 25f))
-            hands = listOf(Offset(111f, 96f + t * 25f), Offset(128f, 96f + t * 25f))
+            hip += Offset(0f, t * 10f); shoulder += Offset(0f, t * 10f); head += Offset(0f, t * 10f)
+            knees = listOf(Offset(103f - t * 6f, 190f + t * 2f), Offset(135f + t * 6f, 190f + t * 2f))
+            elbows = listOf(Offset(86f, 98f + t * 10f), Offset(152f, 98f + t * 10f))
+            hands = listOf(Offset(111f, 96f + t * 10f), Offset(128f, 96f + t * 10f))
         }
         Movement.CALF -> {
             val lift = Offset(0f, -t * 12f)
@@ -79,7 +79,7 @@ private fun pose(m: Movement, t: Float): Pose {
             profile = true
             shoulder = Offset(129f, 79f); hip = Offset(121f, 145f); head = Offset(131f, 48f)
             feet = listOf(Offset(125f, 239f), Offset(126f - t * 40f, 237f - t * 12f))
-            knees = feet.map { joint(hip, it, 51f, 51f, -1f) }
+            knees = listOf(Offset(123f, 192f), blend(hip, feet[1], .5f) + Offset(-t * 3f, 0f))
             elbows = listOf(Offset(154f, 100f), Offset(151f, 107f)); hands = listOf(Offset(173f, 127f), Offset(173f, 127f))
         }
         Movement.WALL_PUSH -> {
@@ -101,7 +101,7 @@ private fun pose(m: Movement, t: Float): Pose {
         Movement.SIDE_STEP -> {
             val shift = Offset(t * 10f, 0f)
             head += shift; shoulder += shift; hip += shift
-            knees = listOf(knees[0] + shift, knees[1] + Offset(t * 25f, 0f))
+            knees = listOf(knees[0] + shift, knees[1] + Offset(t * 10f, 0f))
             feet = listOf(feet[0] + shift, feet[1] + Offset(t * 35f, 0f))
         }
         Movement.SEATED_MARCH, Movement.KNEE_EXTEND, Movement.ANKLE -> {
