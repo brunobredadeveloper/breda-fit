@@ -111,7 +111,10 @@ def main(cache,out,variant="caio"):
         attachments.append((name,mat,av,au,af,aw))
     meshes=[]
     # Clothing masks hide covered body vertices, including private anatomy.
-    bf=[(g,f) for g,f in faces if g=='body' and not any(i in delete for i,u in f)]
+    # Keep complete anatomical arms beneath sleeves: independent garment weights can
+    # otherwise reveal gaps at the shoulder when the upper arm rotates.
+    covered={i for i in delete if sum(weight[i].get(b,0.) for b in range(4,10))<.0001}
+    bf=[(g,f) for g,f in faces if g=='body' and not any(i in covered for i,u in f)]
     meshes.append(('skin',0,base,uv,bf,weight))
     meshes+=attachments
     def write_mesh(name,mat,vertices,uv,faces,weights):
