@@ -91,7 +91,7 @@ fun date(day: Long): String = LocalDate.ofEpochDay(day).format(DateTimeFormatter
                 when {
                     ui.loading -> LoadingScreen()
                     ui.storageFailure -> FailureScreen(vm)
-                    ui.data.profile == null && showIntro -> Welcome { showIntro = false }
+                    ui.data.profile == null && showIntro -> Welcome(ui.data.preferences.reducedMotion) { showIntro = false }
                     ui.data.profile == null -> ProfileForm(vm)
                     ui.session != null -> SessionScreen(ui, vm)
                     else -> AnimatedContent(ui.page, transitionSpec = { fadeIn(tween(if (ui.data.preferences.reducedMotion) 0 else 180)) togetherWith fadeOut(tween(if (ui.data.preferences.reducedMotion) 0 else 120)) }, label = "Page") { page ->
@@ -160,9 +160,9 @@ fun date(day: Long): String = LocalDate.ofEpochDay(day).format(DateTimeFormatter
         Text("breda_dev", color = Lime, fontWeight = FontWeight.Bold, fontSize = 26.sp); Spacer(Modifier.height(20.dp)); CircularProgressIndicator(color = Lime); Spacer(Modifier.height(20.dp)); Text("Preparando seu espaço de movimento", color = Mist)
     }
 }
-@Composable private fun Welcome(onContinue: () -> Unit) {
+@Composable private fun Welcome(reducedMotion: Boolean, onContinue: () -> Unit) {
     PageBody("Mais movimento.\nNo seu ritmo.", "breda_dev / Breda Fit") {
-        ExerciseArt(Catalog.exercise("march"), true, Modifier.fillMaxWidth().height(270.dp))
+        ExerciseArt(Catalog.exercise("march"), !reducedMotion, Modifier.fillMaxWidth().height(270.dp))
         Text("Seu treino começa em casa.", style = MaterialTheme.typography.titleLarge)
         Text("Treinos ilustrados, metas pessoais e um histórico que mostra sua evolução. Sem comparação com outras pessoas.", color = Mist)
         FitCard { Text("Você está no controle", fontWeight = FontWeight.Bold); Text("Escolha movimentos confortáveis, use apoios firmes e pare em caso de dor ou mal-estar. Se tiver uma condição ou limitação, adapte a rotina com um profissional.", color = Mist) }
