@@ -6,6 +6,7 @@ import android.opengl.GLES20
 import android.opengl.GLUtils
 import android.opengl.Matrix
 import androidx.compose.ui.geometry.Offset
+import dev.breda.fit.Movement
 import dev.breda.fit.Exercise
 import dev.breda.fit.ui.pose
 import java.nio.ByteBuffer
@@ -82,13 +83,14 @@ internal class HumanModel(private val assets:AssetManager) {
         val p=pose(exercise.movement,phase)
         fun coord(o:Offset,side:Float=0f)=if(p.profile)Vec(side,(245f-o.y)/100f,(o.x-119f)/100f)else Vec((o.x-119f)/100f,(245f-o.y)/100f,side)
         val restHip=(rest[10][0]+rest[13][0])*.5f
-        val hip=coord(p.hip)+Vec(0f,.035f,0f)
-        val torso=transform(restHip,rest[2][1],hip,coord(p.shoulder))
+        val lift=if(exercise.seated || exercise.movement==Movement.SIT_STAND)0f else .18f
+        val hip=coord(p.hip)+Vec(0f,.035f+lift,0f)
+        val torso=transform(restHip,rest[2][1],hip,coord(p.shoulder)+Vec(0f,lift,0f))
         for(id in 0..3)set(id,torso)
         for(i in 0..1){
             val arm=4+i*3;val leg=10+i*3;val side=if(i==0).14f else -.14f
-            val shoulder=point(torso,rest[arm][0]);val hand=coord(p.hands[1-i],if(p.profile)side else .07f)
-            val elbows=coord(p.elbows[1-i],if(p.profile)side else .04f)
+            val shoulder=point(torso,rest[arm][0]);val hand=coord(p.hands[1-i],if(p.profile)side else .07f)+Vec(0f,lift,0f)
+            val elbows=coord(p.elbows[1-i],if(p.profile)side else .04f)+Vec(0f,lift,0f)
             val (elbow,wrist)=ik(shoulder,hand,elbows,(rest[arm][1]-rest[arm][0]).length(),(rest[arm+1][1]-rest[arm+1][0]).length())
             set(arm,transform(rest[arm][0],rest[arm][1],shoulder,elbow));val forearm=transform(rest[arm+1][0],rest[arm+1][1],elbow,wrist);set(arm+1,forearm)
             // Hands follow the forearm rotation; detailed fingers remain in a relaxed pose.

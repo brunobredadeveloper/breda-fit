@@ -63,7 +63,11 @@ class ExerciseVisualTest {
                 }
             }
         }
-        compose.waitUntil(30000){Catalog.exercises.all{compose.onAllNodesWithTag("scene-ready-${it.id}").fetchSemanticsNodes().isNotEmpty()}}
+        compose.waitForIdle()
+        compose.waitUntil(30000){
+            try { Catalog.exercises.all{compose.onAllNodesWithTag("scene-ready-${it.id}").fetchSemanticsNodes().isNotEmpty()} }
+            catch(e:IllegalStateException){if(e.message?.contains("No compose hierarchies")==true)false else throw e}
+        }
         Catalog.exercises.forEach { compose.onNodeWithTag("exercise-art-${it.id}").assertIsDisplayed() }
         screenshot("visual-catalog.png")
     }

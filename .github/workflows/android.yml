@@ -99,16 +99,16 @@ jobs:
             adb install $(find ui-apks -name '*debug.apk' ! -name '*androidTest*' | head -1)
             adb install $(find ui-apks -name '*androidTest.apk' | head -1)
             adb shell am instrument -w -r dev.breda.fit.debug.test/androidx.test.runner.AndroidJUnitRunner | tee ui-test-result.txt
+            adb logcat -d -s AndroidRuntime:E BredaFit3D:E > gpu-diagnostics.txt
+            for image in visual-catalog.png visual-chair.png visual-expanded-3d.png; do adb pull /sdcard/Android/data/dev.breda.fit.debug/files/$image . || true; done
             grep -q 'OK (5 tests)' ui-test-result.txt
-            adb pull /sdcard/Android/data/dev.breda.fit.debug/files/visual-catalog.png .
-            adb pull /sdcard/Android/data/dev.breda.fit.debug/files/visual-chair.png .
-            adb pull /sdcard/Android/data/dev.breda.fit.debug/files/visual-expanded-3d.png .
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: breda-fit-visual-ui
           path: |
             ui-test-result.txt
+            gpu-diagnostics.txt
             visual-catalog.png
             visual-chair.png
             visual-expanded-3d.png

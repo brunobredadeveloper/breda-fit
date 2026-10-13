@@ -57,7 +57,7 @@ private class SceneController(
             check(EGL14.eglSwapBuffers(SceneGpu.display,surface)){"Falha ao apresentar a cena"}
             if(!announced){announced=true;ready()}
             if(input.animate && !closed && active)handler.postDelayed(this,33)
-        } catch(_:Exception){failed();close(false)}
+        } catch(error:Exception){android.util.Log.e("BredaFit3D","Scene unavailable",error);failed();close(false)}
     }}
     fun start(){handler.post{
         if(closed)return@post
@@ -71,7 +71,7 @@ private class SceneController(
             surface=EGL14.eglCreateWindowSurface(SceneGpu.display,configs[0],nativeSurface,intArrayOf(EGL14.EGL_NONE),0)
             check(surface!=EGL14.EGL_NO_SURFACE && EGL14.eglMakeCurrent(SceneGpu.display,surface,surface,context))
             scene.initialize();initialized=true;handler.post(frame)
-        } catch(_:Exception){failed();close(false)}
+        } catch(error:Exception){android.util.Log.e("BredaFit3D","Scene unavailable",error);failed();close(false)}
     }}
     fun update(value:SceneInput){handler.post{if(!closed){if(!input.animate && value.animate)origin=SystemClock.uptimeMillis();input=value;request()}}}
     fun resize(w:Int,h:Int){handler.post{width=w.coerceAtLeast(1);height=h.coerceAtLeast(1);request()}}

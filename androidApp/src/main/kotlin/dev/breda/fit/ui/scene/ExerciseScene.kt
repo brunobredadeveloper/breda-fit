@@ -30,12 +30,6 @@ internal class ExerciseScene(assets:android.content.res.AssetManager) {
     private val model=FloatArray(16);private val view=FloatArray(16);private val projection=FloatArray(16)
     private val vp=FloatArray(16);private val mvp=FloatArray(16);private val inverse=FloatArray(16);private val normal=FloatArray(16)
     private var aPosition=0;private var aNormal=0;private var uModel=0;private var uMvp=0;private var uNormal=0;private var uColor=0;private var uEye=0
-    private val skin=Material(.80f,.49f,.34f,.16f)
-    private val shirt=Material(.57f,.82f,.24f,.04f)
-    private val trousers=Material(.16f,.25f,.31f,.04f)
-    private val shoe=Material(.84f,.89f,.83f,.15f)
-    private val hair=Material(.055f,.075f,.070f,.08f)
-    private val accent=Material(.62f,.92f,.28f,.12f)
     fun initialize() {
         program=GLES20.glCreateProgram()
         val vertex=shader(GLES20.GL_VERTEX_SHADER,"""
@@ -131,7 +125,7 @@ internal class ExerciseScene(assets:android.content.res.AssetManager) {
         Matrix.perspectiveM(projection,0,35f,width.toFloat()/height.coerceAtLeast(1),.1f,15f);Matrix.multiplyMM(vp,0,projection,0,view,0)
         GLES20.glUniform3f(uEye,eye.x,eye.y,eye.z)
         fun coordinate(p:Offset,side:Float=0f)=if(pose.profile)Vec(side,(245f-p.y)/100f,(p.x-119f)/100f) else Vec((p.x-119f)/100f,(245f-p.y)/100f,side)
-        val hip=coordinate(pose.hip);val shoulder=coordinate(pose.shoulder);val head=coordinate(pose.head)
+        val hip=coordinate(pose.hip)
         // A low studio plinth and layered contact shadow are geometry, not a flat person image.
         ellipsoid(Vec(0f,-.08f,0f),Vec(.98f,.055f,.82f),Material(.12f,.23f,.25f,.05f))
         ellipsoid(Vec(0f,-.065f,0f),Vec(.94f,.04f,.78f),Material(.08f,.14f,.16f,.02f))
