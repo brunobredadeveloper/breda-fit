@@ -1,3 +1,25 @@
+# Validação humana — Breda Fit 0.4.0 — 13/10/2026
+
+GitHub Actions [38446052966](https://github.com/brunobredadeveloper/breda-fit/actions/runs/38446052966), código `658d56ef75e2cebea18094df24eaea9195d625ff`: concluído com sucesso. Os ativos gráficos foram preservados no repositório pelo job `preserve-human-assets`, commit `f2b6925bb9b48b01bb2d0e51c595effa3407d6b3`.
+
+- 17 testes KMP JVM e 5 testes nativos: **22 aprovados**, zero falhas.
+- Doze cenas inicializaram o modelo humano na GPU. Duas posições da cadeira, alteração real de pixels ao girar, ampliação/fechamento e navegação/perfil aprovados.
+- Capturas nativas do catálogo, posições da cadeira e demonstração ampliada inspecionadas. Corpo, face, dedos, roupa e tênis renderizados; membros conectados e cenário enquadrado. O catálogo de testes é uma grade de inspeção, não a tela de catálogo do produto.
+- Emulador Android 15/API 35, Pixel 2/SwiftShader. Log de diagnóstico de runtime/renderização sem erros nesta execução. Não é um benchmark ou teste em celular físico.
+- Lint: zero erros e quatro avisos (três versões de dependências e construtor de View programática).
+- APKs debug/preview/instrumentação compilados; apksigner confirmou assinaturas v2 e v3.
+- APK preview: **21.567.540 bytes**, SHA-256 `269522c0b982a8222b6acc9cfc26168027d9038eb5df4049b30585c3df5a6978`. Digest do artefato, CRC ZIP e bloco de assinatura conferidos após download.
+- ID `dev.breda.fit.preview04`, nome “Breda Fit Humano 0.4”. Instalação independente; dados anteriores permanecem nos apps antigos, sem migração automática.
+- Vinte arquivos de origem com SHA-256 fixado. Download limpo/conversão local reproduziu os mesmos arquivos finais. Geometria finita, pesos normalizados, IDs do rig e índices de 16 bits verificados.
+
+Modelo anatômico adulto CC0 e materiais texturizados, offline, com animação por esqueleto na GPU. Não é pessoa digitalizada, simulação biomecânica ou captura fotográfica. Domínio, estatísticas e persistência preservados. A qualidade dos movimentos precisa de revisão profissional antes de publicação comercial. Não foi compilado iOS nesta execução; UI iOS não implementada.
+
+Veja [visual](visuals.md) e [licença/proveniência](../tools/human/NOTICE.md). No celular: testar movimento reduzido, câmera, ampliar, pausa, retomada, background e diferentes tamanhos de tela.
+
+---
+
+## Histórico de validação
+
 # Validação 3D — Breda Fit 0.3.0 — 13/10/2026
 
 GitHub Actions [38439250615](https://github.com/brunobredadeveloper/breda-fit/actions/runs/38439250615), código `0db7348290a5f2e50fc8b78cef6c0f560486a203`: concluído com sucesso.
