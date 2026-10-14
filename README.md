@@ -1,68 +1,61 @@
-# Breda Fit · breda_dev
+# Breda Fit
 
-App Android de exercícios em casa e acompanhamento corporal, com núcleo **Kotlin Multiplatform**. Interface nativa Jetpack Compose / Material 3, identidade em verde-lima, grafite e azul e demonstrações humanas em 3D.
+**Exercícios em casa e acompanhamento corporal com núcleo Kotlin Multiplatform e interface Android.**
 
-## Personalização inclusiva · 0.5
+Projeto de **Bruno Breda · breda_dev**. Organizar rotinas educativas, acompanhar sessões e registrar medidas sem inventar calorias, diagnósticos ou resultados de emagrecimento.
 
-Nome social ou de preferência como único nome exibido; nenhum nome de registro obrigatório. Identidade de gênero opcional (mulher, homem, pessoa não binária, autodescrição ou não informar), separada da aparência. Avatares Caio, Aurora e Alex com prévia 3D e troca no perfil; qualquer pessoa pode escolher qualquer avatar. Todos os campos ficam no aparelho e não modificam cálculos corporais ou rotinas.
+**Plataforma:** Android · Compose · núcleo Kotlin Multiplatform  
+**Estado:** implementação de portfólio em evolução; esteira aprovada na execução referenciada.
 
-Esta rodada implementa a personalização com a base 3D CC0 existente e novas variações. **O conceito fotorrealista aprovado na conversa não está reproduzido exatamente nem é um modelo 3D utilizável**. A produção e integração de um personagem profissional nesse padrão continua pendente; não se afirma qualidade equivalente a GTA 6 ou personagens AAA. Veja [alvo visual](docs/avatar-target.md).
+[Fluxos e demonstração](docs/fluxos.md) · [Engenharia](docs/engenharia.md) · [Builds e evidências](docs/evidencias.md) · [Portfólio completo](https://github.com/brunobredadeveloper/breda-park-wash/blob/main/docs/portfolio-breda-dev.md)
 
-## Demonstrações humanas
+## O que você pode avaliar
 
-Modelo humano adulto detalhado, com anatomia, rosto, dedos, textura de pele, olhos e cabelo, baseado em ativos gráficos CC0 do MakeHuman Community. Roupa com a paleta da breda_dev, tênis, iluminação com materiais de rugosidade distinta e animação por esqueleto na GPU. Não é uma pessoa real digitalizada nem uma simulação biomecânica.
+- Quatro rotinas e doze movimentos, com preparação, exercício, descanso e resumo.
+- Tempo monotônico, pausa em segundo plano e histórico persistente.
+- Registro de medidas, gráficos por data real e exportação CSV.
+- Nome social/preferido, identidade opcional e avatares Caio, Aurora e Alex independentes do gênero.
 
-Controles para girar e ampliar; funcionamento offline, movimento reduzido e fallback vetorial informado em caso de GPU indisponível. Veja [arquitetura visual e limites](docs/visuals.md) e [licenças e proveniência](tools/human/NOTICE.md).
+## Telas reais
 
-Avaliação: **Breda Fit Avatares 0.5** (`dev.breda.fit.preview05`), instalada ao lado das versões anteriores. Os dados antigos permanecem nelas, sem transferência automática.
+Capturas de componentes 3D em testes nativos no emulador Android, recuperadas dos artefatos da esteira. Não representam uma jornada completa pelas telas do app. Não são mockups nem fotografias de um aparelho físico. A origem e os limites estão em [evidências](docs/evidencias.md).
 
-## O que está implementado
+<img src="docs/imagens/visual-chair.png" alt="Breda Fit — Demonstração de exercício na cadeira" width="260" />
+<img src="docs/imagens/visual-expanded-3d.png" alt="Breda Fit — Visualização 3D ampliada" width="260" />
 
-- Boas-vindas, perfil adulto, altura, peso inicial, meta e frequência semanal.
-- Quatro rotinas: primeira rotina, em pé, mobilidade na cadeira e força em casa.
-- Doze movimentos com figura animada, posições inicial/final, instruções e equipamento necessário.
-- Sessão com preparação, exercício, descanso, pausa, retomada, encerramento e resumo de esforço percebido.
-- Tempo monotônico: conta somente os intervalos ativos; pausa automaticamente ao ir para segundo plano.
-- Histórico persistente, registro diário de peso/cintura/gordura/massa muscular, gráficos por data real e exportação CSV.
-- IMC informativo, progresso até a meta, massa de gordura e massa livre de gordura quando o percentual foi informado.
-- Opção de movimento reduzido, orientação por voz usando TTS Android, controles grandes e descrição acessível das figuras e gráficos.
-- Escrita transacional no DataStore; erros de leitura não apagam o histórico; confirmação explícita para excluir dados.
+## Fluxo principal
 
-Sem conta ou backend necessários. Sem anúncios, analytics, permissão de internet ou promessas de perda de peso. Não há Firebase configurado. A voz depende do idioma/engine TTS disponível no aparelho.
+1. Crie um perfil de teste e escolha frequência e meta.
+2. Selecione uma rotina e consulte as instruções dos movimentos.
+3. Inicie sessão, pause e envie o app ao segundo plano; o tempo deve pausar.
+4. Conclua a sessão e consulte o histórico.
+5. Registre uma medida e altere o avatar pelo perfil.
 
-## Arquitetura
+## Executar e validar
 
-`shared`: Kotlin Multiplatform, com targets Android, JVM, iOS ARM64 e simulador ARM64. Domínio, validação, estatísticas, máquina de estados da sessão e contratos em commonMain.
-
-`androidApp`: aplicativo Android, ViewModel com StateFlow, interface Compose e adapter DataStore. A interface iOS **não está implementada**; os targets iOS preparam o núcleo para uma futura interface e precisam de validação em macOS.
-
-MVVM + Clean Architecture. O domínio não depende de Android. Repository/Adapter isolam persistência; reducer/state machine governa sessões; factory injeta dependências; Flow transporta snapshots imutáveis. Leia [arquitetura](docs/architecture.md).
-
-## Build
-
-JDK 17, Android SDK 37.0, build-tools 36.0.0. Gradle 9.4.1, AGP 9.2.1, Kotlin 2.4.21, Compose BOM 2026.09.00. Android 8+ (minSdk 26). As versões são fixadas para um conjunto estável e reproduzível, sem APIs alpha.
+JDK 17, Android SDK 37 e build-tools 36.0.0; Android 8+. Conversor de assets exige Python 3 e rede no primeiro uso.
 
 ```sh
 python3 tools/human/build_model.py
 ./gradlew :shared:jvmTest :androidApp:lintDebug :androidApp:assembleDebug
 ```
 
-O conversor verifica SHA-256 de todos os ativos e gera as malhas empacotadas. A primeira execução precisa de rede; builds posteriores usam cache local ou os ativos preservados na pasta `assets/human`. Nenhum download ocorre no aplicativo.
+Configuração, Firebase quando aplicável, assinatura e comandos adicionais: [referência técnica](docs/referencia-tecnica.md).
 
-APK: `androidApp/build/outputs/apk/debug/androidApp-debug.apk`. Inclui toda a aplicação; não precisa de computador, Metro ou servidor. Assinatura debug é para avaliação interna. A esteira gera uma chave temporária; nenhum keystore é versionado. Builds diferentes podem exigir desinstalação do APK anterior; exporte dados de teste antes. O aplicativo de teste usa ID `dev.breda.fit.debug`, separado do ID de produção `dev.breda.fit`. Produção utiliza uma chave privada separada. Produção precisa de chave privada do titular, AAB e revisão de publicação.
+[Abrir a execução verificada no GitHub Actions](https://github.com/brunobredadeveloper/breda-fit/actions/runs/38455184400). A conclusão dessa execução é **success**; consulte os artefatos e a revisão de código em [evidências](docs/evidencias.md).
 
-GitHub Actions realiza testes, lint e build do APK em cada push/PR. O artefato se chama `breda-fit-android-apk`. Um workflow pronto não significa que ele já tenha executado: consulte [validação](docs/validation.md).
+## Limites do produto
 
-## Limites e saúde
+Interface iOS não implementada; targets KMP não comprovam app iOS. Rotinas precisam de revisão profissional antes de publicação comercial. O conceito fotorrealista não foi integrado; as capturas mostram o 3D real atual, com ativos CC0 e limitações descritas.
 
-Rotinas genéricas educativas; não substituem prescrição individual. Use cadeira firme sem rodas e apoio estável, amplitude confortável e adaptação profissional quando necessária. Dor ou mal-estar são motivo para parar.
+## Para quem revisa o portfólio
 
-IMC é indicador de triagem, não diagnóstico nem percentual de gordura. Massa muscular é informada a partir de uma medição; massa livre de gordura inclui também água, órgãos e ossos. Não são estimadas calorias ou datas para emagrecer. Fontes e critérios em [saúde](docs/health.md).
+Pessoas adultas e equipes que avaliam domínio compartilhado, sessões e gráficos mobile. As [decisões de engenharia](docs/engenharia.md) conectam responsabilidades, arquivos e testes. O [roteiro funcional](docs/fluxos.md) ajuda a avaliar comportamento, falhas e preservação de dados. Funcionalidade planejada não é apresentada como implementada.
 
-## Próximos passos para publicação
+## Próximos passos
 
-Revisão das rotinas e ilustrações por profissional de educação física; testes em dispositivos reais e com TalkBack/texto ampliado; assinatura de produção; identidade jurídica, contato de suporte, URL de privacidade e declarações de dados de saúde na Play Console. Não há cobrança ativa nesta versão.
+- Validar os percursos no dispositivo real e registrar os resultados.
+- Revisar acessibilidade, interrupções e falhas de armazenamento/rede aplicáveis.
+- Concluir requisitos de distribuição, suporte e segurança antes de uso comercial.
 
-Descrição sugerida do repositório:
-
-> Offline home workouts and body progress tracking for Android, built with Kotlin Multiplatform, Jetpack Compose, MVVM and Clean Architecture by breda_dev.
+Código, mídias e dependências mantêm seus respectivos termos. Consulte os créditos e os avisos existentes no repositório.
